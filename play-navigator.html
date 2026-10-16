@@ -1,0 +1,1697 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>班主任模拟器 · 游玩手册</title>
+<style>
+:root{
+  --bg:#070a10;--bg2:#0c1119;--card:#111823;--card2:#161e2b;--card3:#1c2634;
+  --line:#1e2836;--line2:#2a3646;--line3:#3a4a60;
+  --txt:#eaf0f8;--dim:#8b98ad;--dim2:#5d6a7e;
+  --acc:#2dd4bf;--acc2:#38bdf8;--acc3:#a78bfa;
+  --good:#34d399;--warn:#fbbf24;--bad:#f87171;--pink:#f472b6;
+  --r:16px;--r2:12px;--r3:9px;
+  --sh:0 4px 16px rgba(0,0,0,.35);--sh-lg:0 20px 60px rgba(0,0,0,.6);
+  --ease:cubic-bezier(.22,.85,.3,1);
+  --hd:68px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--hd) + 14px)}
+body{margin:0;padding:0;background:var(--bg);color:var(--txt);
+font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",system-ui,sans-serif;
+font-size:14.5px;line-height:1.78;-webkit-font-smoothing:antialiased;
+background-image:
+ radial-gradient(1000px 560px at 8% -8%,rgba(45,212,191,.13),transparent 62%),
+ radial-gradient(820px 480px at 96% 2%,rgba(56,189,248,.10),transparent 60%),
+ radial-gradient(700px 500px at 50% 108%,rgba(167,139,250,.08),transparent 62%);
+background-attachment:fixed;background-repeat:no-repeat}
+button{font-family:inherit;font-size:inherit;cursor:pointer;border:none;background:none;color:inherit}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#2b3646,#222b38);border-radius:99px;border:1.5px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-track{background:transparent}
+
+/* ===== 阅读进度条 ===== */
+#prog{position:fixed;top:0;left:0;height:2.5px;z-index:70;width:0;
+background:linear-gradient(90deg,var(--acc),var(--acc2) 55%,var(--acc3));
+box-shadow:0 0 10px rgba(45,212,191,.5);transition:width .1s linear}
+
+/* ===== 顶栏 ===== */
+#hd{position:sticky;top:0;z-index:60;
+background:linear-gradient(180deg,rgba(9,13,20,.96),rgba(9,13,20,.84));
+backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);
+border-bottom:1px solid var(--line);padding:10px 16px}
+.hd-row{display:flex;align-items:center;gap:12px;max-width:1400px;margin:0 auto}
+.hd-logo{width:34px;height:34px;flex:0 0 34px;border-radius:11px;display:flex;align-items:center;justify-content:center;
+font-weight:900;font-size:15px;color:#04211f;background:linear-gradient(140deg,#2dd4bf,#38bdf8 60%,#a78bfa);
+box-shadow:0 4px 14px -4px rgba(45,212,191,.5)}
+.hd-t{font-weight:800;font-size:15px;letter-spacing:.4px}
+.hd-s{font-size:11.5px;color:var(--dim)}
+.search{flex:1;max-width:320px;margin-left:auto;position:relative}
+.search input{width:100%;background:var(--card);border:1px solid var(--line2);border-radius:99px;
+padding:8px 14px 8px 34px;font-size:13px;outline:none;color:var(--txt);transition:.18s var(--ease)}
+.search input:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(45,212,191,.12)}
+.search .ico{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--dim2);font-size:13px}
+#sCount{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--acc);
+background:rgba(45,212,191,.12);border-radius:99px;padding:1px 7px;display:none;font-variant-numeric:tabular-nums}
+#menuBtn{display:none}
+
+/* ===== 布局 ===== */
+#wrap{display:flex;max-width:1400px;margin:0 auto;align-items:flex-start;gap:8px}
+#toc{width:224px;flex:0 0 224px;padding:18px 10px 40px;position:sticky;top:var(--hd);
+max-height:calc(100vh - var(--hd));overflow:auto;overscroll-behavior:contain}
+.toc-t{font-size:11px;font-weight:800;color:var(--acc);letter-spacing:.8px;padding:0 10px;margin-bottom:8px}
+/* 目录分组 */
+.toc-g{font-size:10.5px;font-weight:800;letter-spacing:.6px;color:var(--dim2);
+padding:13px 10px 5px;display:flex;align-items:center;gap:6px;text-transform:none}
+.toc-g:first-of-type{padding-top:2px}
+.toc-g::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--line2),transparent)}
+.toc-g i{font-style:normal;width:15px;height:15px;flex:0 0 15px;border-radius:5px;display:flex;
+align-items:center;justify-content:center;font-size:9px;color:#04211f;font-weight:900}
+.toc-g.p1 i{background:linear-gradient(140deg,#2dd4bf,#38bdf8)}
+.toc-g.p2 i{background:linear-gradient(140deg,#38bdf8,#818cf8)}
+.toc-g.p3 i{background:linear-gradient(140deg,#818cf8,#a78bfa)}
+.toc-g.p4 i{background:linear-gradient(140deg,#a78bfa,#f472b6)}
+#toc a{display:flex;gap:7px;align-items:baseline;padding:5px 11px;border-radius:9px;color:var(--dim);
+font-size:12.5px;text-decoration:none;transition:.15s var(--ease);border-left:2px solid transparent}
+#toc a .cn{font-size:10.5px;color:var(--dim2);font-variant-numeric:tabular-nums;flex:0 0 auto}
+#toc a:hover{background:var(--card);color:var(--txt)}
+#toc a.on{background:linear-gradient(100deg,rgba(45,212,191,.14),rgba(56,189,248,.05));
+color:var(--acc);font-weight:700;border-left-color:var(--acc)}
+#toc a.on .cn{color:var(--acc)}
+#toc a.read .cn::after{content:"✓";margin-left:5px;font-size:9px;color:var(--good);opacity:.85}
+#main{flex:1;min-width:0;padding:18px 20px 90px;max-width:960px}
+
+/* ===== Part 封面 ===== */
+.part{scroll-margin-top:calc(var(--hd) + 12px);margin:44px 0 8px;padding:20px 22px;border-radius:var(--r);position:relative;overflow:hidden;
+border:1px solid var(--line2);
+background:linear-gradient(135deg,rgba(45,212,191,.10),rgba(56,189,248,.05) 45%,rgba(167,139,250,.08))}
+.part::before{content:"";position:absolute;inset:0 0 auto 0;height:1px;
+background:linear-gradient(90deg,transparent,rgba(45,212,191,.6),transparent)}
+.part .pn{display:flex;align-items:center;gap:9px;font-size:11px;font-weight:800;letter-spacing:1.4px;
+color:var(--acc);margin-bottom:6px}
+.part .pn b{font-size:10px;padding:2px 9px;border-radius:99px;color:#04211f;
+background:linear-gradient(140deg,var(--acc),var(--acc2))}
+.part.p2 .pn{color:var(--acc2)}.part.p2 .pn b{background:linear-gradient(140deg,var(--acc2),#818cf8)}
+.part.p3 .pn{color:#a5b4fc}.part.p3 .pn b{background:linear-gradient(140deg,#818cf8,var(--acc3))}
+.part.p4 .pn{color:var(--acc3)}.part.p4 .pn b{background:linear-gradient(140deg,var(--acc3),var(--pink))}
+/* 前言：中性配色，不抢四个 Part 的视觉层级 */
+.part.p0{padding:14px 18px;margin:24px 0 4px;border-color:var(--line2);
+background:linear-gradient(135deg,rgba(139,152,173,.10),rgba(139,152,173,.03))}
+.part.p0 .pn{color:var(--dim);letter-spacing:1.2px;margin-bottom:4px}
+.part.p0 .pn b{background:linear-gradient(140deg,#7c8ba1,#5d6a7e);color:#0a0f16}
+.part.p0 h2{font-size:16.5px}
+.part.p0 .pd{font-size:12px;margin-top:3px}
+.part h2{margin:0;font-size:21px;font-weight:900;letter-spacing:.6px}
+.part .pr{margin-left:10px;font-size:11px;font-weight:700;color:var(--dim2);letter-spacing:.5px;
+border:1px solid var(--line2);border-radius:99px;padding:2px 9px;background:rgba(9,13,20,.4);vertical-align:3px}
+.part .pd{font-size:12.5px;color:var(--dim);margin-top:5px;line-height:1.6}
+.part .pchips{display:flex;gap:6px;flex-wrap:wrap;margin-top:11px}
+.part .pchips a{font-size:11.5px;color:var(--dim);text-decoration:none;background:var(--card2);
+border:1px solid var(--line2);border-radius:99px;padding:2.5px 11px;transition:.15s var(--ease)}
+.part .pchips a:hover{color:var(--acc);border-color:rgba(45,212,191,.4);background:rgba(45,212,191,.08)}
+
+/* ===== 大标题与导语 ===== */
+h1.t{margin:0;font-size:26px;font-weight:900;letter-spacing:.9px;line-height:1.35;
+background:linear-gradient(100deg,#ffffff,#9fe8dd 58%,#a78bfa);
+-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.lead{font-size:14.5px;color:var(--dim);line-height:1.85;margin:12px 0 0;max-width:68ch}
+.lead b{color:var(--txt)}
+.hero-stats{display:flex;gap:7px;flex-wrap:wrap;margin-top:15px}
+.hero-stats span{font-size:11.5px;color:var(--dim);background:var(--card2);border:1px solid var(--line);
+border-radius:99px;padding:3px 12px}
+.hero-stats span b{color:var(--acc);font-weight:800;font-variant-numeric:tabular-nums}
+
+/* ===== 章节 ===== */
+h2.sec{counter-reset:hs;font-size:20.5px;font-weight:800;margin:46px 0 0;letter-spacing:.6px;
+display:flex;align-items:center;gap:11px;padding-bottom:11px;border-bottom:1px solid var(--line2)}
+h2.sec:first-of-type{margin-top:8px}
+h2.sec .n{width:28px;height:28px;flex:0 0 28px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+font-size:12px;font-weight:800;color:#04211f;background:linear-gradient(140deg,var(--acc),var(--acc2));
+box-shadow:0 3px 10px -3px rgba(45,212,191,.55);font-variant-numeric:tabular-nums}
+h2.sec .st{margin-left:auto;font-size:10.5px;font-weight:700;color:var(--dim2);letter-spacing:.5px;
+border:1px solid var(--line2);border-radius:99px;padding:1.5px 10px;background:var(--card2)}
+
+/* 章首速览 */
+.abs{display:flex;gap:12px;align-items:flex-start;margin:14px 0 16px;padding:12px 15px;
+border-radius:var(--r2);background:linear-gradient(100deg,rgba(56,189,248,.09),rgba(56,189,248,.02));
+border:1px solid rgba(56,189,248,.22);border-left:3px solid rgba(56,189,248,.55)}
+.abs .ai{width:22px;height:22px;flex:0 0 22px;border-radius:7px;display:flex;align-items:center;justify-content:center;
+font-size:11px;font-weight:900;color:#04211f;background:linear-gradient(140deg,var(--acc2),#7dd3fc);margin-top:2px}
+.abs .at{font-size:13.2px;line-height:1.7;color:#cfdaea}
+.abs .at::before{content:"本章讲什么 · ";color:var(--acc2);font-weight:800;letter-spacing:.3px}
+.abs .at b{color:#fff}
+.abs .aw{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+/* 章内小节导航 */
+.asec{display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin-top:7px;padding-top:7px;
+border-top:1px dashed rgba(56,189,248,.22)}
+.asec .as-l{font-size:10.5px;color:var(--dim2);letter-spacing:.4px}
+.asec a{font-size:11px;color:var(--dim);text-decoration:none;background:rgba(255,255,255,.04);
+border:1px solid var(--line);border-radius:99px;padding:1.5px 9px;transition:.15s var(--ease)}
+.asec a:hover{color:var(--acc2);border-color:rgba(56,189,248,.4);background:rgba(56,189,248,.1)}
+
+/* 卡片 */
+.card{background:linear-gradient(165deg,var(--card) 0%,rgba(13,18,26,.92) 100%);
+border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;margin-bottom:14px;box-shadow:0 1px 2px rgba(0,0,0,.4)}
+.card.sub{background:linear-gradient(165deg,rgba(16,22,32,.85),rgba(10,14,21,.85));box-shadow:none}
+h3{counter-increment:hs;font-size:15.5px;font-weight:800;margin:28px 0 10px;color:var(--txt);
+letter-spacing:.3px;line-height:1.5}
+h3:first-child{margin-top:2px}
+h3::before{content:counter(hs);display:inline-block;min-width:20px;height:20px;line-height:20px;
+text-align:center;border-radius:6px;font-size:11px;font-weight:800;color:#04211f;margin-right:9px;
+background:linear-gradient(140deg,var(--acc),var(--acc2));box-shadow:0 2px 8px -3px rgba(45,212,191,.6);
+font-variant-numeric:tabular-nums;vertical-align:1px}
+h4{font-size:13.5px;font-weight:800;margin:20px 0 8px;color:var(--acc2);letter-spacing:.2px;
+padding-bottom:5px;border-bottom:1px dashed var(--line2)}
+p{margin:10px 0}
+ul,ol{margin:10px 0;padding-left:22px}
+li{margin:5px 0}
+b{font-weight:800;color:#fff}
+.muted{color:var(--dim)}
+.mini{font-size:12px}
+code{background:var(--card2);border:1px solid var(--line);border-radius:6px;padding:1.5px 6px;
+font-size:12.5px;font-family:ui-monospace,"SF Mono",Consolas,monospace;color:var(--acc)}
+
+/* 表格 */
+table{width:100%;border-collapse:separate;border-spacing:0;font-size:12.8px;margin:11px 0}
+th,td{padding:7.5px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:#9fb0c6;font-weight:700;font-size:11.5px;letter-spacing:.4px;
+background:linear-gradient(180deg,#18212f,#131b27);position:sticky;top:0;z-index:2;border-bottom:1px solid var(--line2)}
+table caption{caption-side:top;text-align:left;font-size:11.5px;color:var(--dim2);padding:0 2px 6px;letter-spacing:.2px}
+th:first-child{border-top-left-radius:var(--r3)}th:last-child{border-top-right-radius:var(--r3)}
+tbody tr:nth-child(even) td{background:rgba(255,255,255,.017)}
+tbody tr:hover td{background:rgba(56,189,248,.07)}
+tbody tr:last-child td{border-bottom:none}
+td:first-child{font-weight:600}
+.num{font-variant-numeric:tabular-nums}
+.nowrap{white-space:nowrap}
+.tbl-wrap{overflow:auto;border:1px solid var(--line);border-radius:var(--r2);background:rgba(9,13,20,.35);
+-webkit-overflow-scrolling:touch}
+/* 窄屏表格可横向滚动时，右侧渐隐提示 */
+.scroll-hint{position:relative}
+.scroll-hint::after{content:"";position:absolute;top:0;right:0;bottom:0;width:26px;pointer-events:none;
+border-radius:0 var(--r2) var(--r2) 0;
+background:linear-gradient(90deg,transparent,rgba(7,10,16,.85))}
+@media(min-width:1000px){.scroll-hint::after{display:none}}
+.toc-jump{display:inline-block;font-size:11.5px;color:var(--acc);text-decoration:none;margin-top:20px;
+background:rgba(45,212,191,.08);border:1px solid rgba(45,212,191,.28);border-radius:99px;padding:3px 13px}
+.toc-jump:hover{background:rgba(45,212,191,.16)}
+.tbl-wrap table{margin:0}
+.tbl-cap{font-size:11.5px;color:var(--dim2);margin:9px 0 0;padding-left:2px}
+
+/* 提示框 */
+.box{border-radius:var(--r2);padding:12px 15px;margin:13px 0;font-size:13.2px;border:1px solid;line-height:1.7}
+.box.tip{background:rgba(45,212,191,.08);border-color:rgba(45,212,191,.3)}
+.box.warn{background:rgba(251,191,36,.08);border-color:rgba(251,191,36,.3)}
+.box.bad{background:rgba(248,113,113,.08);border-color:rgba(248,113,113,.3)}
+.box.info{background:rgba(56,189,248,.08);border-color:rgba(56,189,248,.3)}
+.box .bt{font-weight:800;font-size:12.8px;letter-spacing:.4px;margin-bottom:4px;display:block;color:var(--txt)}
+.box.tip .bt{color:var(--acc)}.box.warn .bt{color:var(--warn)}
+.box.bad .bt{color:var(--bad)}.box.info .bt{color:var(--acc2)}
+.box ul,.box ol{margin:5px 0}
+
+/* 标签 */
+.tag{display:inline-block;font-size:11px;padding:1.5px 8px;border-radius:7px;background:#1b2431;
+color:var(--dim);border:1px solid var(--line2);white-space:nowrap;font-weight:600}
+.tag.g{color:var(--good);border-color:rgba(52,211,153,.34);background:rgba(52,211,153,.1)}
+.tag.r{color:var(--bad);border-color:rgba(248,113,113,.34);background:rgba(248,113,113,.1)}
+.tag.y{color:var(--warn);border-color:rgba(251,191,36,.32);background:rgba(251,191,36,.1)}
+.tag.b{color:#7dd3fc;border-color:rgba(125,211,252,.3);background:rgba(125,211,252,.09)}
+.tag.p{color:var(--pink);border-color:rgba(244,114,182,.32);background:rgba(244,114,182,.09)}
+.tag.a{color:var(--acc);border-color:rgba(45,212,191,.34);background:rgba(45,212,191,.1)}
+
+/* 网格卡片 */
+.grid{display:grid;gap:11px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.kv{background:var(--card2);border:1px solid var(--line);border-radius:var(--r2);padding:11px 13px}
+.kv .k{font-size:11.5px;color:var(--dim);display:flex;justify-content:space-between;gap:6px}
+.kv .v{font-size:20px;font-weight:800;margin-top:2px;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
+.kv .d{font-size:11.5px;color:var(--dim);margin-top:2px}
+
+/* 链条 */
+.chain{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12px;margin:10px 0}
+.chain i{font-style:normal;color:var(--dim2)}
+.node{background:var(--card2);border:1px solid var(--line2);border-radius:8px;padding:4px 10px;font-weight:600}
+.node.up{border-color:rgba(52,211,153,.4);background:rgba(52,211,153,.1);color:var(--good)}
+.node.dn{border-color:rgba(248,113,113,.4);background:rgba(248,113,113,.1);color:var(--bad)}
+.node.ac{border-color:rgba(45,212,191,.4);background:rgba(45,212,191,.1);color:var(--acc)}
+
+/* 章末导航 */
+.chnav{display:flex;gap:9px;margin:16px 0 0;flex-wrap:wrap}
+.chnav a{flex:1;min-width:150px;text-decoration:none;background:var(--card);border:1px solid var(--line);
+border-radius:var(--r2);padding:10px 14px;transition:.18s var(--ease);display:block}
+.chnav a:hover{border-color:rgba(45,212,191,.4);background:rgba(45,212,191,.06);transform:translateY(-1px)}
+.chnav a .cl{font-size:10.5px;color:var(--dim2);letter-spacing:.5px}
+.chnav a .ct{font-size:13px;font-weight:700;margin-top:1px}
+.chnav a.nx{text-align:right}
+.chnav a.nx:hover .ct{color:var(--acc)}
+.chnav a.pv:hover .ct{color:var(--acc)}
+/* 相关章节 */
+.rel{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:12px 0 0;font-size:11.5px}
+.rel .rl{color:var(--dim2)}
+.rel a{color:var(--dim);text-decoration:none;background:var(--card2);border:1px solid var(--line);
+border-radius:99px;padding:2px 10px;transition:.15s var(--ease)}
+.rel a:hover{color:var(--acc);border-color:rgba(45,212,191,.4)}
+
+/* 高亮 */
+mark{background:rgba(251,191,36,.28);color:#ffe9a8;border-radius:3px;padding:0 2px}
+mark.cur{background:rgba(45,212,191,.35);color:#c8fff4;box-shadow:0 0 0 2px rgba(45,212,191,.2)}
+.hit{display:none}
+.hit.on{display:block}
+
+hr.sep{border:none;border-top:1px solid var(--line);margin:22px 0}
+.foot{text-align:center;color:var(--dim2);font-size:11.5px;padding:30px 0 10px;line-height:1.9}
+
+/* 返回顶部 */
+#totop{position:fixed;right:16px;bottom:20px;z-index:58;width:40px;height:40px;border-radius:50%;
+background:linear-gradient(140deg,var(--card2),var(--card));border:1px solid var(--line2);
+display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--dim);
+box-shadow:var(--sh);opacity:0;pointer-events:none;transition:.22s var(--ease)}
+#totop.on{opacity:1;pointer-events:auto}
+#totop:hover{color:var(--acc);border-color:rgba(45,212,191,.45);transform:translateY(-2px)}
+
+@media(max-width:1000px){
+  #toc{display:none;position:fixed;inset:var(--hd) 0 0 0;width:auto;flex:none;background:var(--bg2);
+  z-index:55;max-height:none;padding:14px 14px 40px}
+  #toc.open{display:block}
+  #menuBtn{display:flex;width:34px;height:34px;flex:0 0 34px;align-items:center;justify-content:center;
+  border-radius:9px;background:var(--card);border:1px solid var(--line2);font-size:15px}
+  #main{padding:14px 14px 80px;max-width:none}
+  h1.t{font-size:22px}
+  h2.sec{font-size:18px;margin:36px 0 0}
+  h3{font-size:14.8px;margin:24px 0 9px}
+  .lead{font-size:14px}
+  .g2,.g3{grid-template-columns:1fr}
+  .card{padding:15px 16px}
+  .part{padding:16px 17px}
+  .part h2{font-size:18.5px}
+  .search{max-width:none}
+  .chnav a{min-width:0}
+}
+@media(max-width:560px){
+  body{font-size:14px}
+  table{font-size:12px}
+  th,td{padding:6px 8px}
+  .hd-s{display:none}
+}
+@media print{
+  #hd,#toc,#prog,#totop,#menuBtn{display:none!important}
+  h2.sec .st,.part .pr{display:none}
+  body{background:#fff;color:#111;font-size:11pt}
+  .card,.box,.part{border:1px solid #ccc;background:#fff!important;box-shadow:none;break-inside:avoid}
+  h2.sec{break-after:avoid}h3{break-after:avoid}
+  #main{max-width:none;padding:0}
+  a{color:#111;text-decoration:none}
+  .chnav,.rel{display:none}
+}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+
+<header id="hd">
+  <div class="hd-row">
+    <button id="menuBtn" onclick="document.getElementById('toc').classList.toggle('open')">☰</button>
+    <div class="hd-logo">师</div>
+    <div>
+      <div class="hd-t">班主任模拟器 · 游玩手册</div>
+      <div class="hd-s">新高考 3+1+2 · 从分科到高考</div>
+    </div>
+    <div class="search">
+      <span class="ico">🔍</span>
+      <span id="sCount"></span>
+      <input id="q" placeholder="搜索：赋分 / 培优 / 压力 / 经费…" oninput="doSearch(this.value)">
+    </div>
+  </div>
+</header>
+
+<button id="totop" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="回到顶部（Esc 也可）">↑</button>
+<div id="wrap">
+<nav id="toc">
+  <div class="toc-t">目录</div>
+  <div class="toc-g p0"><i>·</i>前言 · 一分钟找到你要的</div>
+  <a href="#index"><span class="cn">00</span><span>怎么用这本手册</span></a>
+  <div class="toc-g p1"><i>I</i>上手 · 先玩起来</div>
+  <a href="#start"><span class="cn">01</span><span>开始之前</span></a>
+  <a href="#ui"><span class="cn">02</span><span>界面速览</span></a>
+  <a href="#time"><span class="cn">03</span><span>时间轴与考试</span></a>
+  <a href="#class"><span class="cn">04</span><span>班级、方向与分层</span></a>
+  <div class="toc-g p2"><i>II</i>看懂你的班 · 核心机制</div>
+  <a href="#score"><span class="cn">05</span><span>成绩是怎么算的</span></a>
+  <a href="#growth"><span class="cn">06</span><span>成长是怎么涨的</span></a>
+  <a href="#student"><span class="cn">07</span><span>学生档案全解</span></a>
+  <a href="#trait"><span class="cn">08</span><span>特质与家庭全表</span></a>
+  <div class="toc-g p3"><i>III</i>你能做什么 · 操作手册</div>
+  <a href="#action"><span class="cn">09</span><span>行动全解</span></a>
+  <a href="#meeting"><span class="cn">10</span><span>班会与四类话术</span></a>
+  <a href="#manage"><span class="cn">11</span><span>班级管理</span></a>
+  <a href="#fund"><span class="cn">12</span><span>经费商城</span></a>
+  <a href="#task"><span class="cn">13</span><span>学校月度任务</span></a>
+  <div class="toc-g p4"><i>IV</i>从会玩到精通</div>
+  <a href="#event"><span class="cn">14</span><span>事件应对</span></a>
+  <a href="#mechanic"><span class="cn">15</span><span>核心数值链条</span></a>
+  <a href="#result"><span class="cn">16</span><span>高考与评分</span></a>
+  <a href="#strategy"><span class="cn">17</span><span>进阶策略</span></a>
+  <a href="#mis"><span class="cn">18</span><span>常见误区</span></a>
+  <a href="#appendix"><span class="cn">19</span><span>数值速查表</span></a>
+</nav>
+
+<main id="main">
+
+<div class="card">
+<h1 class="t">班主任模拟器 · 游玩手册</h1>
+<p class="lead">你是一所重点高中的班主任。从高二分科后接手一个班，用 <b>64 周</b>把他们送到高考考场。<br>
+本手册共 4 个部分、20 章（含前言与附录），涵盖全部机制、数值、行动与策略。</p>
+<div class="hero-stats">
+  <span><b>4</b> 个部分</span><span><b>20</b> 章</span><span><b>34</b> 张表</span>
+  <span><b>64</b> 周</span><span>通读约 <b>35</b> 分钟</span>
+</div>
+
+<div class="grid g3" style="margin-top:16px">
+<div class="kv" style="border-color:rgba(45,212,191,.3)">
+  <div class="k"><span style="color:var(--acc);font-weight:800">路线 A · 第一次玩</span></div>
+  <div class="d" style="font-size:12.5px;margin-top:6px;line-height:1.7">
+  按目录顺序读 Part I（<a href="#start" style="color:var(--acc)">01</a> → <a href="#time" style="color:var(--acc)">03</a>），
+  然后直接开玩。遇到不懂的再回来查。<br>
+  <span class="muted">约 10 分钟</span></div>
+</div>
+<div class="kv" style="border-color:rgba(56,189,248,.3)">
+  <div class="k"><span style="color:var(--acc2);font-weight:800">路线 B · 想搞懂机制</span></div>
+  <div class="d" style="font-size:12.5px;margin-top:6px;line-height:1.7">
+  直奔 Part II：<a href="#score" style="color:var(--acc2)">05 成绩怎么算</a>、
+  <a href="#student" style="color:var(--acc2)">07 学生档案</a>、
+  <a href="#mechanic" style="color:var(--acc2)">15 数值链条</a>。<br>
+  <span class="muted">理解"为什么"的关键</span></div>
+</div>
+<div class="kv" style="border-color:rgba(167,139,250,.3)">
+  <div class="k"><span style="color:var(--acc3);font-weight:800">路线 C · 冲 S 评级</span></div>
+  <div class="d" style="font-size:12.5px;margin-top:6px;line-height:1.7">
+  <a href="#result" style="color:var(--acc3)">16 高考评分</a> 看权重 →
+  <a href="#strategy" style="color:var(--acc3)">17 分层打法</a> →
+  <a href="#mis" style="color:var(--acc3)">18 避开误区</a>。<br>
+  <span class="muted">已知目标，只求最优解</span></div>
+</div>
+</div>
+
+<div class="box tip" style="margin-top:14px"><span class="bt">不知道从哪查？</span>
+用顶栏的搜索框（输入"赋分""经费""休学"等关键词会实时过滤章节），或直接看
+<a href="#index" style="color:var(--acc)"><b>00 · 怎么用这本手册</b></a> 里的「按问题查章节」索引表。</div>
+</div>
+
+<div class="part p0">
+  <div class="pn"><b>前言</b>READ THIS FIRST</div>
+  <h2>怎么用这本手册</h2>
+  <div class="pd">三条阅读路线、按问题查章节的索引、以及手册里的标记约定。一分钟就能找到你要的东西。</div>
+</div>
+
+<h2 class="sec" id="index"><span class="n">00</span>怎么用这本手册<span class="st">索引</span></h2>
+<div class="card">
+<div class="abs"><span class="ai">00</span><div>
+  <div class="at">这一章不教你玩游戏，只告诉你<b>去哪一章找答案</b>。想不起来某个机制在哪的时候，回到这里查表最快。</div>
+  <div class="aw"><span class="tag a">导航</span><span class="tag a">速查</span></div>
+  <div class="asec"><span class="as-l">本节：</span><a href="#index-h1">按问题查章节</a><a href="#index-h2">手册里的标记约定</a><a href="#index-h3">关于数值</a></div>
+</div></div>
+
+<h3 id="index-h1">按问题查章节</h3>
+<div class="tbl-wrap"><table>
+<thead><tr><th style="width:46%">我想知道…</th><th>去这一章</th></tr></thead>
+<tbody>
+<tr><td>开局选什么班、选什么难度？固定剧本是什么？</td><td><a href="#start" style="color:var(--acc)">01 开始之前</a></td></tr>
+<tr><td>界面上那些数字、图标、按钮都是什么意思？</td><td><a href="#ui" style="color:var(--acc)">02 界面速览</a></td></tr>
+<tr><td>一周 / 一个月 / 一学期分别发生什么？什么时候考试？</td><td><a href="#time" style="color:var(--acc)">03 时间轴与考试</a></td></tr>
+<tr><td>30 个班怎么分层的？南山班内部谁最强？</td><td><a href="#class" style="color:var(--acc)">04 班级、方向与分层</a></td></tr>
+<tr><td>为什么化学生物政治地理的分数和我算的不一样？</td><td><a href="#score" style="color:var(--acc)">05 成绩是怎么算的</a></td></tr>
+<tr><td>一本线 / 985 线 / 本科线分别是多少分？</td><td><a href="#score" style="color:var(--acc)">05 成绩是怎么算的</a> · <a href="#appendix" style="color:var(--acc)">19 数值速查表</a></td></tr>
+<tr><td>这个学生为什么突然考砸了？状态标签都代表什么？</td><td><a href="#student" style="color:var(--acc)">07 学生档案全解</a></td></tr>
+<tr><td>「玻璃心」「躺平青年」这些特质有什么影响？</td><td><a href="#trait" style="color:var(--acc)">08 特质与家庭全表</a></td></tr>
+<tr><td>行动点该怎么分配？哪个行动性价比最高？</td><td><a href="#action" style="color:var(--acc)">09 行动全解</a></td></tr>
+<tr><td>该找谁谈话、话该怎么说？</td><td><a href="#meeting" style="color:var(--acc)">10 班会与四类话术</a></td></tr>
+<tr><td>作业强度、纪律力度这些滑块该调到几？</td><td><a href="#manage" style="color:var(--acc)">11 班级管理</a></td></tr>
+<tr><td>班费怎么花最划算？</td><td><a href="#fund" style="color:var(--acc)">12 经费商城</a></td></tr>
+<tr><td>学校布置的月度任务怎么完成？</td><td><a href="#task" style="color:var(--acc)">13 学校月度任务</a></td></tr>
+<tr><td>遇到早恋 / 作弊 / 家长投诉该怎么办？</td><td><a href="#event" style="color:var(--acc)">14 事件应对</a></td></tr>
+<tr><td>压力、士气、凝聚力是怎么互相影响的？</td><td><a href="#mechanic" style="color:var(--acc)">15 核心数值链条</a></td></tr>
+<tr><td>最后怎么算分？S 评级要多少分？</td><td><a href="#result" style="color:var(--acc)">16 高考与评分</a></td></tr>
+<tr><td>我这个层次的班该怎么打？每周该做什么？</td><td><a href="#strategy" style="color:var(--acc)">17 进阶策略</a></td></tr>
+<tr><td>我一直在踩哪些坑？</td><td><a href="#mis" style="color:var(--acc)">18 常见误区</a></td></tr>
+<tr><td>某个阈值 / 数值是多少来着？</td><td><a href="#appendix" style="color:var(--acc)">19 数值速查表</a></td></tr>
+</tbody></table></div>
+
+<h3 id="index-h2">手册里的标记约定</h3>
+<div class="grid g2">
+<div class="kv"><div class="k"><span class="box tip" style="display:inline-block;padding:1px 11px;margin:0"><b>提示</b></span></div>
+<div class="d" style="margin-top:7px">绿色框 = 推荐做法与技巧。想玩得好，优先看这些。</div></div>
+<div class="kv"><div class="k"><span class="box warn" style="display:inline-block;padding:1px 11px;margin:0"><b>注意</b></span></div>
+<div class="d" style="margin-top:7px">黄色框 = 容易踩的坑、有代价的选择。</div></div>
+<div class="kv"><div class="k"><span class="box bad" style="display:inline-block;padding:1px 11px;margin:0"><b>警告</b></span></div>
+<div class="d" style="margin-top:7px">红色框 = 严重失误、不可逆后果。</div></div>
+<div class="kv"><div class="k"><span class="box info" style="display:inline-block;padding:1px 11px;margin:0"><b>说明</b></span></div>
+<div class="d" style="margin-top:7px">蓝色框 = 底层机制解释，讲"为什么这么设计"。</div></div>
+</div>
+
+<h3 id="index-h3">关于数值</h3>
+<p>手册里所有数值都对应当前版本的游戏。若某次更新后数值有变，以<b>游戏内显示</b>为准 ——
+尤其是 <a href="#score" style="color:var(--acc)">分数线</a>、
+<a href="#manage" style="color:var(--acc)">政策档位效果</a> 这类会随平衡调整而变动的部分。</p>
+</div>
+
+<div class="chnav"><a class="nx" href="#start"><div class="cl">下一章 →</div><div class="ct">01 开始之前</div></a></div>
+<div class="rel"><span class="rl">相关：</span><a href="#start">01 开始之前</a><a href="#appendix">19 数值速查表</a></div>
+
+<div class="part p1">
+  <div class="pn"><b>PART I</b>上手</div>
+  <h2>先玩起来再说<span class="pr">01–04</span></h2>
+  <div class="pd">开局三问怎么答、界面长什么样、一周里会发生什么、以及该挑哪个班。读完这四章就能开玩，剩下的边玩边查。</div>
+  <div class="pchips">
+    <a href="#start">01 开始之前</a><a href="#ui">02 界面速览</a><a href="#time">03 时间轴与考试</a><a href="#class">04 班级、方向与分层</a>
+  </div>
+</div>
+
+<h2 class="sec" id="start"><span class="n">01</span>开始之前<span class="st">开局</span></h2>
+<div class="card">
+<div class="abs"><span class="ai">01</span><div>
+  <div class="at">三步搞定开局：名字 → 任课学科 → 挑班级。外加三档难度，以及「自由开局 / 固定剧本·23班」两种玩法。</div>
+  <div class="aw"><span class="tag a">开局</span><span class="tag a">难度</span><span class="tag a">剧本</span></div>
+  <div class="asec"><span class="as-l">本节：</span><a href="#start-h1">开局三步</a><a href="#start-h2">难度（开局后不可更改）</a><a href="#start-h3">两种开局模式</a></div>
+</div></div>
+<h3 id="start-h1">开局三步</h3>
+<ol>
+<li><b>你的名字</b> —— 会作为你所教科目的任课老师出现在教师团队里。</li>
+<li><b>任课学科</b> —— 只能选本班开设的科目。<b>你教的那一科，全班成长额外 +6%</b>，并且可以用「任教科目加餐」亲自提升。推荐选<b>数学或英语</b>（150 分、提分空间大），或选你班的<b>首选科目</b>（物理/历史，100 分原始分计入）。</li>
+<li><b>选班级</b> —— 30 个班，从弱到强：重点班 → 尖子班 → 特尖班 → 南山班（最强），另有艺体班。</li>
+</ol>
+
+<h3 id="start-h2">难度（开局后不可更改）</h3>
+<div class="tbl-wrap"><table>
+<thead><tr><th>难度</th><th>每周 AP</th><th>压力 / 违纪 / 手机</th><th>成绩成长速度</th><th>适合谁</th></tr></thead>
+<tbody>
+<tr><td><span class="tag g">轻松</span></td><td class="num">5</td><td>低 / 低 / 低</td><td>成长 ×1.16 · 上限 ×1.20</td><td>第一次玩、想看完整剧情</td></tr>
+<tr><td><span class="tag a">标准</span></td><td class="num">4</td><td>中 / 中 / 中</td><td>成长 ×1.0 · 上限 ×1.0</td><td><b>推荐</b>，平衡最好</td></tr>
+<tr><td><span class="tag r">严苛</span></td><td class="num">3</td><td>高 / 高 / 高</td><td>成长 ×0.86 · 上限 ×0.86</td><td>挑战极限、追求 S 评级</td></tr>
+</tbody></table></div>
+
+<h3 id="start-h3">两种开局模式</h3>
+<div class="grid g2">
+<div class="kv"><div class="k"><span>自由开局</span><span class="tag a">随机</span></div>
+<div class="v" style="font-size:15px">自定义一切</div>
+<div class="d">学生姓名、特质、家庭、成绩全部随机生成；科任老师随机；每局都不同。</div></div>
+<div class="kv"><div class="k"><span>固定剧本 · 23班</span><span class="tag y">预设</span></div>
+<div class="v" style="font-size:15px">23班 · 58人</div>
+<div class="d">南山班（理科次强，仅次于 22 班），物化生组合。你是<b>范心语</b>老师（班主任兼语文）。<br>
+教师固定：刘佑威（数）、郭爱香（英）、曾雪梅（物）、肖运生（化）、蔡欣欣（生）。<br>
+学生成绩按高二开学考真实名单导入，<b>黄春生物理 98 分（单科第一）、总分列第 12 名</b>。</div></div>
+</div>
+
+<div class="box info"><span class="bt">行动点（AP）</span>
+每周刷新。基础 4 点（轻松 5 / 严苛 3），<b>精力 &gt; 75 时 +1</b>，<b>精力 &lt; 35 时 −1</b>，<b>压力 &gt; 78 时再 −1</b>，最终限制在 2–6 点之间。<br>
+→ 这意味着<b>你自己也要休息</b>。长期高压会让你每周少 1–2 个行动点，损失远超一次加班的收益。</div>
+</div>
+
+<div class="chnav"><a class="pv" href="#index"><div class="cl">← 上一章</div><div class="ct">00 怎么用这本手册</div></a><a class="nx" href="#ui"><div class="cl">下一章 →</div><div class="ct">02 界面速览</div></a></div>
+<div class="rel"><span class="rl">相关：</span><a href="#time">03 时间轴与考试</a><a href="#class">04 班级、方向与分层</a><a href="#action">09 行动全解</a></div>
+
+<h2 class="sec" id="ui"><span class="n">02</span>界面速览<span class="st">界面</span></h2>
+<div class="card">
+<div class="abs"><span class="ai">02</span><div>
+  <div class="at">顶栏、六个页面、学生详情抽屉分别是什么，哪些地方能点、点了会发生什么。</div>
+  <div class="aw"><span class="tag a">界面</span><span class="tag a">导航</span></div>
+  <div class="asec"><span class="as-l">本节：</span><a href="#ui-h1">顶栏</a><a href="#ui-h2">六个页面</a><a href="#ui-h3">学生详情（侧边抽屉）</a></div>
+</div></div>
+<h3 id="ui-h1">顶栏</h3>
+<ul>
+<li><b>班级徽章</b>：班级层级色的班号方块。</li>
+<li><b>时间</b>：高二上·第1月·第1周 形式，右侧显示距高考周数。</li>
+<li><b>高考进度条</b>：青→蓝→紫渐变，随 64 周推进。</li>
+<li><b>状态 chip</b>：行动点、精力、压力、声望、经费（<b>点经费可直接打开商城</b>）、最近一次大考均分与同类排名。</li>
+<li><b>?</b> 玩法指南 · <b>全屏</b> 切换 · <b>推进本周 ▸</b> 结束本周。</li>
+</ul>
+
+<h3 id="ui-h2">六个页面</h3>
+<div class="tbl-wrap"><table>
+<thead><tr><th>页面</th><th>看什么 / 做什么</th></tr></thead>
+<tbody>
+<tr><td><b>◈ 总览</b></td><td>4 个 KPI（均分 / 方向排名 / 核心指标 / 平均压力）、班风气象条、需关注学生、班级日志、推进本周</td></tr>
+<tr><td><b>◉ 行动</b></td><td>21 项行动，消耗 AP。灰色表示条件未满足（如考前特训只在考试周可用）</td></tr>
+<tr><td><b>▣ 学生</b></td><td>名单 + 筛选（重点关注 / 状态 / 性别）+ 排序 + 搜索。点名字打开右侧详情抽屉</td></tr>
+<tr><td><b>▤ 成绩</b></td><td>上线情况、分数段直方图、均分趋势（对比年级）、学科得分率、历次大考表、完整成绩单</td></tr>
+<tr><td><b>◍ 管理</b></td><td>政策 5 项滑块、周末补课开关、座位、班干部、课代表、经费商城、违纪记录、科任教师团队</td></tr>
+<tr><td><b>▦ 事务</b></td><td>学校月度考核任务、班级日志全览</td></tr>
+</tbody></table></div>
+
+<h3 id="ui-h3">学生详情（侧边抽屉）</h3>
+<p>从右侧滑出，桌面 600px 宽、手机全屏。分三段：</p>
+<ul>
+<li><b>头部</b>：姓名 / 性别·组合·家庭 / 总分大字 / 班排·年级·全区</li>
+<li><b>主体</b>：状态与全部特质（带解说）→ 关键指标六宫格（师生关系、学习效率、压力、正能量、成长/上限、目标院校）→ 八项数值条 → 各科得分率 + 成长值 + 弱科 → 成绩轨迹 → 家庭与背景</li>
+<li><b>底栏</b>：谈话 / 家访 / 心理辅导 / 竞赛·强基 / 标记关注 / 任命班干部 + 剩余 AP</li>
+</ul>
+<div class="box tip"><span class="bt">快捷键式的效率</span>
+学生页用「重点关注」筛选，可以只看有状态标签（早恋/手机/焦虑…）的学生 —— 这是每周分配 AP 的主要依据。</div>
+</div>
+
+<div class="chnav"><a class="pv" href="#start"><div class="cl">← 上一章</div><div class="ct">01 开始之前</div></a><a class="nx" href="#time"><div class="cl">下一章 →</div><div class="ct">03 时间轴与考试</div></a></div>
+<div class="rel"><span class="rl">相关：</span><a href="#student">07 学生档案全解</a><a href="#action">09 行动全解</a></div>
+
+<h2 class="sec" id="time"><span class="n">03</span>时间轴与考试<span class="st">节奏</span></h2>
+<div class="card">
+<div class="abs"><span class="ai">03</span><div>
+  <div class="at">64 周的完整时间结构：每周一次周考、每月一次大考、四个学期、两次模拟考，最后是高考。</div>
+  <div class="aw"><span class="tag a">时间轴</span><span class="tag a">考试</span></div>
+  <div class="asec"><span class="as-l">本节：</span><a href="#time-h1">整体结构</a><a href="#time-h2">考试节奏</a></div>
+</div></div>
+<h3 id="time-h1">整体结构</h3>
+<div class="grid g4" style="grid-template-columns:repeat(4,1fr);gap:10px">
+<div class="kv"><div class="k">学期</div><div class="v">4</div><div class="d">高二上 / 下、高三上 / 下</div></div>
+<div class="kv"><div class="k">每月</div><div class="v">4 周</div><div class="d">第 4 周是大考</div></div>
+<div class="kv"><div class="k">每学期</div><div class="v">4 月</div><div class="d">第 2、4 月为期中/期末</div></div>
+<div class="kv"><div class="k">总计</div><div class="v">64 周</div><div class="d">最后一周是高考</div></div>
+</div>
+
+<h3 id="time-h2">考试节奏</h3>
+<div class="tbl-wrap"><table>
+<thead><tr><th>时间</th><th>考试</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td>开局</td><td><b>开学考</b></td><td>摸底，建立初始排名与成绩单</td></tr>
+<tr><td>每月第 4 周</td><td><b>大考</b></td><td>月考 / 期中 / 期末；结算学校任务、拨付班费、家长反馈</td></tr>
+<tr><td>第 2 月大考</td><td><b>期中考试</b></td><td>期末之外最重要的节点</td></tr>
+<tr><td>第 4 月大考</td><td><b>期末考试</b></td><td>学期末额外结算声望（同类排名进前半 +4，否则 −3）</td></tr>
+<tr><td>非大考周</td><td><b>周考</b></td><td>单科轮换（语数英 + 本班三科），不影响总分，但会影响正能量/压力并产生叙事</td></tr>
+<tr><td>高三下</td><td><b>模拟考 ×2</b></td><td>第 55、59 周，高考前的实战演练</td></tr>
+<tr><td>第 64 周</td><td><b>高考</b></td><td>出结局</td></tr>
+</tbody></table></div>
+
+<h4>每周流程（推进本周时自动发生）</h4>
+<ol>
+<li><b>周考</b>（非大考周）—— 单科测验，正能量/压力微调，可能生成叙事日志</li>
+<li><b>学习成长结算</b> —— 每个学生各科成长值上涨（受学习效率、教师、课代表等影响）</li>
+<li><b>状态演化</b> —— 压力回归、健康变化、状态倒计时、违纪判定、早恋触发</li>
+<li><b>大考</b>（第 4 周）—— 全科考试、排名、上线统计、班级排名</li>
+<li><b>月末</b> —— 任务结算 → 生成新任务 → 拨付班费 → 家长反馈</li>
+<li><b>触发事件</b> —— 42% 概率弹出一个随机事件让你决策</li>
+</ol>
+</div>
+
+<div class="chnav"><a class="pv" href="#ui"><div class="cl">← 上一章</div><div class="ct">02 界面速览</div></a><a class="nx" href="#class"><div class="cl">下一章 →</div><div class="ct">04 班级、方向与分层</div></a></div>
+<div class="rel"><span class="rl">相关：</span><a href="#task">13 学校月度任务</a><a href="#result">16 高考与评分</a></div>
+
+<h2 class="sec" id="class"><span class="n">04</span>班级、方向与分层<span class="st">选班</span></h2>
+<div class="card">
+<div class="abs"><span class="ai">04</span><div>
+  <div class="at">30 个班的层级与方向，南山班内部的强弱排序，以及物理 / 历史方向的分开划线与分开排名。</div>
+  <div class="aw"><span class="tag a">分层</span><span class="tag a">方向</span></div>
+  <div class="asec"><span class="as-l">本节：</span><a href="#class-h1">30 个班的格局</a><a href="#class-h2">南山班内部再分层</a><a href="#class-h3">物理方向 / 历史方向</a><a href="#class-h4">各科组合（3+1+2）</a></div>
+</div></div>
+<h3 id="class-h1">30 个班的格局</h3>
+<div class="tbl-wrap"><table>
+<thead><tr><th>班号</th><th>层级</th><th>人数</th><th>学业水平</th><th>考核目标</th><th>难度</th></tr></thead>
+<tbody>
+<tr><td class="nowrap"><b>1–6</b></td><td><span class="tag">重点班</span></td><td class="num">56</td><td class="num">49 ± 9</td><td>本科上线率</td><td>★★★</td></tr>
+<tr><td class="nowrap"><b>7–16、27–28</b></td><td><span class="tag b">尖子班</span></td><td class="num">54</td><td class="num">56 ± 8</td><td>一本上线率</td><td>★★</td></tr>
+<tr><td class="nowrap"><b>17–20、25–26</b></td><td><span class="tag g">特尖班</span></td><td class="num">48</td><td class="num">62 ± 7</td><td>双一流上线率</td><td>★★★</td></tr>
+<tr><td class="nowrap"><b>21–24 ★</b></td><td><span class="tag y">南山班</span></td><td class="num">42</td><td class="num">66 ± 7</td><td>985 上线率</td><td>★★★★</td></tr>
+<tr><td class="nowrap"><b>29–30</b></td><td><span class="tag p">艺体班</span></td><td class="num">38</td><td class="num">47 ± 11</td><td>文化与专业双上线率</td><td>★★★</td></tr>
+</tbody></table></div>
+
+<h3 id="class-h2">南山班内部再分层</h3>
+<div class="tbl-wrap"><table>
+<thead><tr><th>班级</th><th>组合</th><th>水平</th><th>定位</th></tr></thead>
+<tbody>
+<tr><td><b>21 班</b></td><td>史政地</td><td class="num">66.5 ± 6.5</td><td>历史方向的唯一南山班，<b>文科最强</b>；同层只剩自己，对比组会自动并入最接近的班级</td></tr>
+<tr><td><b>22 班</b></td><td>物化生</td><td class="num">67 ± 6</td><td><b>全校最强</b>，理科天花板</td></tr>
+<tr><td><b>23 班</b></td><td>物化生</td><td class="num">65 ± 7</td><td>理科次强（固定剧本班）</td></tr>
+<tr><td><b>24 班</b></td><td>物化生</td><td class="num">63.5 ± 7</td><td>理科第三</td></tr>
+</tbody></table></div>
+
+<h3 id="class-h3">物理方向 / 历史方向</h3>
+<p>新高考下班级分两个方向，由组合决定：<b>首选中含「物」= 物理方向</b>，含「史」= 历史方向。</p>
+<div class="box warn"><span class="bt">只在同方向内比较</span>
+<ul style="margin:4px 0 0">
+<li><b>划线</b>：物理方向用物理类线，历史方向用历史类线（历史类线更高，因为史政地赋分天然偏高）。</li>
+<li><b>排名</b>：总览的「方向排名」只统计同方向的班级；同类班排名也是<b>本方向同层次</b>的班级。</li>
+<li>21 班作为唯一的历史方向南山班，若同层次不足 3 个班，会自动并入层次最接近的班级组成对比组（界面会注明）。</li>
+</ul></div>
+
+<h3 id="class-h4">各科组合（3+1+2）</h3>
+<p>语数英（各 150）+ <b>首选</b>物理/历史（100，原始分）+ <b>再选</b>两科（100，等级赋分）。游戏提供 12 种组合，各班固定一种（分科班不开设走班）。</p>
+<div class="box info"><span class="bt">教师团队按组合配置</span>
+物化生班只有语数英物化生 6 位老师，<b>不会出现政史地老师</b>。你选的任课学科也必须是本班开设的科目。</div>
+</div>
+
+<div class="chnav"><a class="pv" href="#time"><div class="cl">← 上一章</div><div class="ct">03 时间轴与考试</div></a><a class="nx" href="#score"><div class="cl">下一章 →</div><div class="ct">05 成绩是怎么算的</div></a></div>
+<div class="rel"><span class="rl">相关：</span><a href="#score">05 成绩是怎么算的</a><a href="#strategy">17 进阶策略</a></div>
+
+<div class="part p2">
+  <div class="pn"><b>PART II</b>看懂你的班</div>
+  <h2>分数是怎么来的<span class="pr">05–08</span></h2>
+  <div class="pd">分数从哪来、成长怎么涨、每个学生究竟是什么样。不理解这四章，你只是在瞎点按钮。</div>
+  <div class="pchips">
+    <a href="#score">05 成绩是怎么算的</a><a href="#growth">06 成长是怎么涨的</a><a href="#student">07 学生档案全解</a><a href="#trait">08 特质与家庭全表</a>
+  </div>
+</div>
+
+<h2 class="sec" id="score"><span class="n">05</span>成绩是怎么算的<span class="st">机制</span></h2>
+<div class="card">
+<div class="abs"><span class="ai">05</span><div>
+  <div class="at">分数这个数字到底怎么来的：等级赋分、学业水平换算、六条分数线。<b>看懂这一章，成绩单上就没有你看不懂的数。</b></div>
+  <div class="aw"><span class="tag a">赋分</span><span class="tag a">分数线</span><span class="tag a">核心</span></div>
+  <div class="asec"><span class="as-l">本节：</span><a href="#score-h1">等级赋分</a><a href="#score-h2">学业水平 → 分数</a><a href="#score-h3">分数线与核心指标</a></div>
+</div></div>
+<h3 id="score-h1">等级赋分（最关键的新高考机制）</h3>
+<div class="tbl-wrap"><table>
+<thead><tr><th>科目</th><th>满分</th><th>计分方式</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td>语文 / 数学 / 英语</td><td class="num">150</td><td><span class="tag b">原始分</span></td><td>卷面多少就是多少</td></tr>
+<tr><td>物理 / 历史（首选）</td><td class="num">100</td><td><span class="tag b">原始分</span></td><td>卷面多少就是多少</td></tr>
+<tr><td>化学 / 生物 / 政治 / 地理（再选）</td><td class="num">100</td><td><span class="tag a">等级赋分</span></td><td>按全市选考人群分布换算为 <b>30–100</b> 分</td></tr>
+</tbody></table></div>
+<p>赋分逻辑：你的卷面分在全体选考生中的百分位 → 落到 A/B/C/D/E 五个等级区间 → 映射为 30–100 的分数。</p>
+<div class="box tip"><span class="bt">这带来什么策略</span>
+<ul style="margin:4px 0 0">
+<li>再选科目<b>卷面分 ≠ 最终分</b>。卷面 70 分在化学里可能赋到 80+，也可能只有 65，取决于整门课的难度与竞争。</li>
+<li>弱科补到中位区间的<b>边际收益最高</b>（从 C 档跨到 B 档，赋分可能一次跳 8–10 分）。</li>
+<li>尖子生再选科目已经接近 100 分天花板，<b>继续投入的收益远不如补语数英</b>。</li>
+</ul></div>
+
+<h3 id="score-h2">学业水平 → 分数</h3>
+<p>每个学生有一个隐藏的「学业水平值」（约 5–125），加上单科偏差和成长值，再换算成分数。所以你看到的分数波动，本质是<b>水平 + 单科偏差 + 成长 + 状态修正 + 考试随机波动</b>。</p>
+
+<h3 id="score-h3">分数线与核心指标</h3>
+<div class="tbl-wrap"><table>
+<thead><tr><th>类别</th><th>物理类</th><th>历史类</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td>专科线</td><td class="num">240</td><td class="num">270</td><td>—</td></tr>
+<tr><td><b>本科线</b></td><td class="num">442</td><td class="num">452</td><td>重点班 / 艺体班的核心指标</td></tr>
+<tr><td><b>一本线</b></td><td class="num">508</td><td class="num">518</td><td>尖子班的核心指标</td></tr>
+<tr><td><b>双一流线</b></td><td class="num">552</td><td class="num">558</td><td>特尖班的核心指标</td></tr>
+<tr><td><b>985 线</b></td><td class="num">588</td><td class="num">594</td><td>南山班的核心指标</td></tr>
+<tr><td>清北线</td><td class="num">668</td><td class="num">674</td><td>只在光荣榜统计</td></tr>
+</tbody></table></div>
+<p>总览第三个 KPI 会<b>跟着你的班级层级自动切换</b>：南山班看 985 人数、特尖班看双一流人数、尖子班看一本人数、重点班与艺体班看本科人数。成绩页「上线情况」里本层级那条会打 ★。</p>
+<div class="box info"><span class="bt">分数线会随阶段浮动</span>
+高二阶段用的是<b>相对线</b>（约为真实线的 93%~94.5%），高三上 97.5%，高三下才是真实线。<br>
+这是为了让高二开学考的上线人数符合"还没到最后冲刺"的实际情况 —— 你会看到上线人数随年级推进稳步增长，而不是开局就一片红。</div>
+
+</div>
+<div class="chnav"><a class="pv" href="#class"><div class="cl">← 上一章</div><div class="ct">04 班级、方向与分层</div></a><a class="nx" href="#growth"><div class="cl">下一章 →</div><div class="ct">06 成长是怎么涨的</div></a></div>
+<div class="rel"><span class="rl">相关：</span><a href="#growth">06 成长是怎么涨的</a><a href="#appendix">19 数值速查表</a></div>
+
+<h2 class="sec" id="growth"><span class="n">06</span>成长是怎么涨的<span class="st">机制</span></h2>
+<div class="card">
+<div class="abs"><span class="ai">06</span><div>
+  <div class="at">分数不会自己涨。每周结算时，学习效率 × 各科成长 × 上限，决定了两年后他们能到哪。<b>这一章是全部操作的理论基础。</b></div>
+  <div class="aw"><span class="tag a">学习效率</span><span class="tag a">成长上限</span><span class="tag a">错题本</span></div>
+  <div class="asec"><span class="as-l">本节：</span><a href="#growth-h1">学习效率（学生面板可见 ×1.0）</a><a href="#growth-h2">成长值</a><a href="#growth-h3">成长上限（各科独立）</a><a href="#growth-h4">学风双机制：错题本 + 计划表</a></div>
+</div></div>
+<h3 id="growth-h1">学习效率（学生面板可见 ×1.0）</h3>
+<p>决定每周各科成长值涨多少。基准 1.0，综合以下因子：</p>
+<div class="chain">
+<span class="node ac">勤奋</span><i>+</i><span class="node dn">压力（&gt;38 才开始拖后腿）</span><i>+</i><span class="node ac">内驱力</span><i>+</i><span class="node ac">天赋</span><i>+</i><span class="node ac">正能量</span><i>+</i><span class="node up">班级凝聚力</span><i>+</i><span class="node up">师生关系</span><i>=</i><span class="node">学习效率 ×N</span>
+</div>
+<div class="box warn"><span class="bt">压力是隐形杀手</span>
+压力 ≤ 38 时完全不影响效率；<b>超过 38 后每涨 1 点，效率线性下降</b>，压力 100 时效率只剩 45%。<br>
+这就是为什么「题海战术 + 军事化纪律」短期看着涨分、长期必然崩盘。</div>
+
+<h3 id="growth-h2">成长值</h3>
+<p>每周结算时，每个学生每科的成长值都会上涨，涨幅由学习效率、教师、课代表、早读/晚自习、座位等共同决定。学生面板可以看到各科的成长值。</p>
+
+<h3 id="growth-h3">成长上限（各科独立）</h3>
+<p>每科的成长值有各自的上限，初始约 <b>5~18</b>（平均 11）。学生面板显示「成长 X / 上限 Y」。<br>
+认真操作 64 周后，成长值会<b>接近或顶到上限</b>，此时继续刷题无效，必须先抬上限：</p>
+<ul>
+<li><b>培优辅导</b>（2 AP）—— 尖子生弱科上限 +1.6~4.0（竞赛苗子翻倍）</li>
+<li><b>检查错题本</b>（1 AP）—— 全科上限 +0.45，可叠加（执行度会回落，见下）</li>
+<li><b>外聘名师讲座</b>（¥2600）—— 该科教师能力 +7 + 全班该科成长</li>
+</ul>
+<p class="mini muted">难度也影响天花板：轻松 ×1.20、标准 ×1.0、严苛 ×0.86。</p>
+
+<h3 id="growth-h4">学风双机制：错题本 + 计划表</h3>
+<p>这是两个<b>「检查型」</b>行动 —— 不是做一次就永久生效，而是<b>每次检查把执行度顶上去，之后每周自然回落</b>：</p>
+<div class="tbl-wrap"><table>
+<thead><tr><th>行动</th><th>AP</th><th>效果</th><th>每周回落</th></tr></thead>
+<tbody>
+<tr><td><b>检查错题本</b></td><td class="num">1</td><td>全科成长上限 +0.45、勤奋 +1.6；执行度越高学习效率越高</td><td class="num">−2.0</td></tr>
+<tr><td><b>检查计划表</b></td><td class="num">1</td><td>全班勤奋 +（越不会规划的受益越大）、压力 −1.6、内驱 +1.2</td><td class="num">−2.2</td></tr>
+</tbody></table></div>
+<p>执行度是 0~100 的数值，每次检查约顶到 <code>当前 + (100−当前)×0.42 + 8</code>，所以越接近满值边际收益越小。<br>
+两者都维持在 <b>55% 以上</b>时，学习效率有额外 <b>+2.5%</b> 协同加成。</p>
+<div class="box warn"><span class="bt">坚持或别开始</span>
+不持续检查，执行度两三周就掉到 0，投入的 AP 等于白花。<br>
+<b>推荐节奏</b>：每月各检查 1~2 次（约 2~4 AP/月），就能把两者稳定在 60~80%。总览「班风气象」下方会显示当前执行度。</div>
+</div>
+
+
+<div class="chnav"><a class="pv" href="#score"><div class="cl">← 上一章</div><div class="ct">05 成绩是怎么算的</div></a><a class="nx" href="#student"><div class="cl">下一章 →</div><div class="ct">07 学生档案全解</div></a></div>
+<div class="rel"><span class="rl">相关：</span><a href="#action">09 行动全解</a><a href="#manage">11 班级管理</a><a href="#appendix">19 数值速查表</a></div>
+
+<h2 class="sec" id="student"><span class="n">07</span>学生档案全解<span class="st">档案</span></h2>
+<div class="card">
+<div class="abs"><span class="ai">07</span><div>
+  <div class="at">八项个体数值、师生关系、状态标签、高压的代价、家庭三数值 —— 看懂一个学生要看什么。</div>
+  <div class="aw"><span class="tag a">数值</span><span class="tag a">状态</span></div>
+  <div class="asec"><span class="as-l">本节：</span><a href="#student-h1">八项个体数值</a><a href="#student-h2">师生关系（0–100）</a><a href="#student-h3">状态标签（11 种）</a><a href="#student-h4">高压的代价</a><a href="#student-h5">家庭</a></div>
+</div></div>
+<h3 id="student-h1">八项个体数值</h3>
+<div class="tbl-wrap"><table>
+<thead><tr><th>属性</th><th>作用</th><th>怎么提升</th></tr></thead>
+<tbody>
+<tr><td><b>学业基础</b></td><td>决定所有科目的起点水平</td><td>几乎固定，靠成长值累积</td></tr>
+<tr><td><b>勤奋</b></td><td>学习效率的主要因子</td><td>施压鞭策、学习方法指导、课代表任命、检查错题本 / 计划表</td></tr>
+<tr><td><b>心态</b></td><td>抗压能力；心态低则目标压力高</td><td>建议就医、志愿指导、心理辅导</td></tr>
+<tr><td><b>纪律</b></td><td>纪律越低，违纪概率越高</td><td>严厉批评、通报家长、整顿纪律、手机专项治理</td></tr>
+<tr><td><b>内驱力</b></td><td>学习效率因子 + 决定成长速度</td><td>聊理想与目标、励志班会、奖学金、学长分享、志愿指导</td></tr>
+<tr><td><b>压力</b></td><td><b>&gt;38 开始拖累效率</b>；≥80 触发失眠，≥86 触发焦虑，≥92 持续掉健康</td><td>文体活动、减压班会、心理辅导、批假、降低作业强度</td></tr>
+<tr><td><b>健康</b></td><td>&lt;45 会生病请假（缺课掉成长）</td><td>体育器材、批假休息、就医、班级设施</td></tr>
+<tr><td><b>正能量</b></td><td>学习效率因子，也影响班级氛围</td><td>鼓励打气、奖学金、团建、文体活动、考好</td></tr>
+</tbody></table></div>
+
+<h3 id="student-h2">师生关系（0–100）</h3>
+<p>每个学生对你有一个单独的关系值。<b>关系越高，你的谈话 / 家访 / 心理辅导效果越强</b>（最高约 +25%）。</p>
+<div class="box bad"><span class="bt">关系低于 35 时</span>
+界面会提示「沟通效果打折」，谈话、家访、心理辅导的收益明显缩水。此时先做<b>鼓励打气 / 倾听疏导</b>把关系拉回来，再谈正事。</div>
+<p><b>掉关系的操作</b>：严厉批评（−8）、没收手机（−5）、通报家长（−6）、施压鞭策（−4）、手机专项治理（全班 −6）。<br>
+<b>涨关系的操作</b>：鼓励打气（+9）、倾听疏导（+10）、聊理想（+7）、报喜式沟通（+6）、学习方法指导（+5）、家校共育（+5）、培优辅导（+4）。</p>
+
+<h3 id="student-h3">状态标签（11 种）</h3>
+<div class="tbl-wrap"><table>
+<thead><tr><th>状态</th><th>成绩影响</th><th>压力</th><th>持续</th><th>怎么解除</th></tr></thead>
+<tbody>
+<tr><td><span class="tag p">早恋</span></td><td class="num">−4.5%</td><td>+6</td><td>4–10 周</td><td>谈话「处理感情问题」、分别谈话、通知家长、调座位</td></tr>
+<tr><td><span class="tag r">沉迷手机</span></td><td class="num">−8.5%</td><td>+4</td><td>2–6 周</td><td>谈话「没收手机」、手机专项治理、通报家长</td></tr>
+<tr><td><span class="tag r">焦虑失眠</span></td><td class="num">−6%</td><td class="num">+16</td><td>3–7 周</td><td>心理辅导（倾听/就医）、团体心理辅导、请心理老师驻班</td></tr>
+<tr><td><span class="tag y">生病请假</span></td><td class="num">−5%</td><td>+8</td><td>1–3 周</td><td>自行恢复；批假休息、提升健康可预防</td></tr>
+<tr><td><span class="tag y">过度疲劳</span></td><td class="num">−3%</td><td>+10</td><td>2–5 周</td><td>减压、批假、降低作业强度</td></tr>
+<tr><td><span class="tag b">竞赛集训</span></td><td class="num">+2%</td><td>+14</td><td>—</td><td>集训科目成长 ×2.1，但停课；建议给真正的苗子用</td></tr>
+<tr><td><span class="tag g">正能量满满</span></td><td class="num">+4.5%</td><td>—</td><td>—</td><td>考好了自动获得，珍惜这段窗口</td></tr>
+<tr><td><span class="tag a">一对一辅导</span></td><td class="num">+3.5%</td><td>—</td><td>3 周</td><td>培优 / 补差辅导给予，成长 ×1.35</td></tr>
+<tr><td><span class="tag p">专业集训</span></td><td class="num">−6%</td><td>—</td><td>—</td><td>艺体生外出集训，文化课会掉</td></tr>
+<tr><td><span class="tag r">记过处分</span></td><td class="num">−2%</td><td>+12</td><td>—</td><td>严重违纪的后果，影响班级考核</td></tr>
+</tbody></table></div>
+
+<h3 id="student-h4">高压的代价</h3>
+<div class="box warn"><span class="bt">压力滚雪球</span>
+压力 ≥ 86 会触发<b>焦虑失眠</b>（本身再 +16 压力），≥ 92 之后每周额外掉 1.4 点健康。<br>
+学生<b>不会因此离开班级</b>，但成绩、健康、正能量会一起垮 —— 一个长期泡在 90+ 压力里的学生，高考时等于白丢几十分。</div>
+<p><b>预防</b>：总览的「需关注」清单会列出高危学生。看到<b>压力 ≥ 85 或带焦虑标签</b>的学生，优先安排心理辅导或减压班会。一次「倾听疏导」就能降 16–26 点压力。</p>
+
+<h3 id="student-h5">家庭</h3>
+<p>七种家庭类型决定 <b>支持度</b> 与 <b>经济状况</b>；另有三个独立数值：</p>
+<ul>
+<li><b>家庭支持</b>：影响压力与正能量。家校共育 +9，感恩教育班会 +5。</li>
+<li><b>经济状况</b>：低于 40 可用「资助困难学生」（¥1200）大幅改善：内驱 +13、压力 −9、正能量 +10、声望 +2。<b>性价比极高的操作</b>。</li>
+<li><b>家长期望</b>：越高动力越足，但目标压力也越高。超过 70 可用「疏导家长期望」（−16 期望、−12 压力）。</li>
+</ul>
+<div class="tbl-wrap"><table>
+<thead><tr><th>家庭</th><th>支持</th><th>经济</th><th>家庭</th><th>支持</th><th>经济</th></tr></thead>
+<tbody>
+<tr><td>城区</td><td class="num">70</td><td class="num">68</td><td>干部家庭</td><td class="num">76</td><td class="num">72</td></tr>
+<tr><td>县镇</td><td class="num">58</td><td class="num">48</td><td>经商家庭</td><td class="num">52</td><td class="num">82</td></tr>
+<tr><td>农村</td><td class="num">48</td><td class="num">34</td><td>单亲</td><td class="num">40</td><td class="num">45</td></tr>
+<tr><td>留守</td><td class="num">34</td><td class="num">38</td><td colspan="3"></td></tr>
+</tbody></table></div>
+</div>
+
+<div class="chnav"><a class="pv" href="#growth"><div class="cl">← 上一章</div><div class="ct">06 成长是怎么涨的</div></a><a class="nx" href="#trait"><div class="cl">下一章 →</div><div class="ct">08 特质与家庭全表</div></a></div>
+<div class="rel"><span class="rl">相关：</span><a href="#trait">08 特质与家庭全表</a><a href="#mechanic">15 核心数值链条</a></div>
+
+<h2 class="sec" id="trait"><span class="n">08</span>特质与家庭全表<span class="st">数据表</span></h2>
+<div class="card">
+<div class="abs"><span class="ai">08</span><div>
+  <div class="at">全部特质与家庭类型的效果总表，以及各自该怎么应对。纯查表章节。</div>
+  <div class="aw"><span class="tag a">特质</span><span class="tag a">查表</span></div>
+</div></div>
+<p>每个学生按权重随机获得 <b>2–3 个特质</b>并叠加效果（例如「玻璃心 + 焦虑体质 + 竞赛苗子」）。学生档案里能看到全部特质及其解说。</p>
+<div class="tbl-wrap"><table>
+<thead><tr><th>特质</th><th>效果</th><th>应对建议</th></tr></thead>
+<tbody>
+<tr><td><span class="tag g">自律达人</span></td><td>勤奋 +14、心态 +8、压力积累 −0.2</td><td>省心，放养即可</td></tr>
+<tr><td><span class="tag b">天赋异禀</span></td><td>天赋 +26、基础 +4、勤奋 −10</td><td>聊目标、补勤奋，别用施压</td></tr>
+<tr><td><span class="tag g">勤奋刻苦</span></td><td>勤奋 +20、心态 −6</td><td>主力；注意别把心态压崩</td></tr>
+<tr><td><span class="tag r">玻璃心</span></td><td>心态 −24、压力积累 ×1.6</td><td><b>高危</b>。只用鼓励，严禁施压/严厉批评</td></tr>
+<tr><td><span class="tag g">乐天派</span></td><td>心态 +22、压力积累 ×0.7</td><td>班级稳压器，可当班干部</td></tr>
+<tr><td><span class="tag y">躺平青年</span></td><td>内驱 −28、勤奋 −8</td><td>聊理想与目标、励志班会、志愿指导</td></tr>
+<tr><td><span class="tag y">社交牛人</span></td><td>纪律 −12、心态 +10；全班正能量 +、纪律 −</td><td>当文娱委员；盯紧违纪</td></tr>
+<tr><td><span class="tag p">恋爱脑</span></td><td>早恋风险 ×4</td><td>重点关注列表常客</td></tr>
+<tr><td><span class="tag r">网瘾少年</span></td><td>手机风险 ×4、勤奋 −6</td><td>配合手机专项治理</td></tr>
+<tr><td><span class="tag b">体育特长</span></td><td>心态 +14、抗压好、勤奋 −8</td><td>运动会主力；补学习时间</td></tr>
+<tr><td><span class="tag p">艺术特长</span></td><td>内驱 +6，艺考苗子</td><td>艺体班的重点培养对象</td></tr>
+<tr><td><span class="tag a">竞赛苗子</span></td><td>天赋 +20，单科极强</td><td><b>报名竞赛/强基</b>；培优时上限翻倍</td></tr>
+<tr><td><span class="tag a">班干部料</span></td><td>纪律 +8，当班干部效果翻倍</td><td>优先任命为班长/纪律委员</td></tr>
+<tr><td><span class="tag y">全家希望</span></td><td>内驱 +12、压力 +12、期望 +30</td><td>「疏导家长期望」效果显著</td></tr>
+<tr><td><span class="tag r">留守少年</span></td><td>压力 +8、心态 −8、家庭支持 −26</td><td>家校共育 + 资助，双管齐下</td></tr>
+<tr><td><span class="tag r">单亲家庭</span></td><td>心态 −10、内驱 −4、支持 −14</td><td>多鼓励，少批评</td></tr>
+<tr><td><span class="tag b">家境优渥</span></td><td>经济 +35、内驱 −10</td><td>靠目标感驱动</td></tr>
+<tr><td><span class="tag g">寒门学子</span></td><td>勤奋 +16、内驱 +10、经济 −28</td><td><b>资助效果最好</b>的一批人</td></tr>
+<tr><td><span class="tag r">焦虑体质</span></td><td>压力积累 +0.55</td><td><b>高危</b>。常态性关注压力</td></tr>
+<tr><td><span class="tag g">大心脏</span></td><td>心态 +16、考试波动 −0.35</td><td>高考型选手</td></tr>
+<tr><td><span class="tag y">拖延症</span></td><td>勤奋 −14</td><td>学习方法指导 + 检查计划表</td></tr>
+<tr><td><span class="tag r">刺头</span></td><td>纪律 −18、勤奋 −6</td><td>违纪主力；整顿纪律的首要目标</td></tr>
+</tbody></table></div>
+<div class="box tip"><span class="bt">高危组合识别</span>
+<code>玻璃心 / 焦虑体质 / 留守少年 / 全家希望</code> 这四个任意两个叠加，该生就是<b>高危压力候选人</b>。开局立刻标记关注，之后每月检查一次压力。</div>
+</div>
+
+<div class="chnav"><a class="pv" href="#student"><div class="cl">← 上一章</div><div class="ct">07 学生档案全解</div></a><a class="nx" href="#action"><div class="cl">下一章 →</div><div class="ct">09 行动全解</div></a></div>
+<div class="rel"><span class="rl">相关：</span><a href="#student">07 学生档案全解</a><a href="#meeting">10 班会与四类话术</a></div>
+
+<div class="part p3">
+  <div class="pn"><b>PART III</b>你能做什么</div>
+  <h2>操作手册<span class="pr">09–13</span></h2>
+  <div class="pd">行动点、班会、政策、经费、任务 —— 你手上的全部工具，以及它们各自的性价比。</div>
+  <div class="pchips">
+    <a href="#action">09 行动全解</a><a href="#meeting">10 班会与话术</a><a href="#manage">11 班级管理</a><a href="#fund">12 经费商城</a><a href="#task">13 月度任务</a>
+  </div>
+</div>
+<h2 class="sec" id="action"><span class="n">09</span>行动全解（21 项）<span class="st">操作</span></h2>
+<div class="card">
+<div class="abs"><span class="ai">09</span><div>
+  <div class="at">21 项行动逐条拆解：消耗多少 AP、效果如何、什么时候用。末尾附 AP 分配的黄金比例。</div>
+  <div class="aw"><span class="tag a">行动</span><span class="tag a">AP</span></div>
+</div></div>
+<p>行动页的每一项都消耗行动点（AP）。灰掉的项表示条件未满足。</p>
+<div class="tbl-wrap"><table>
+<thead><tr><th>行动</th><th>AP</th><th>效果</th><th>什么时候用</th></tr></thead>
+<tbody>
+<tr><td><b>主题班会</b></td><td class="num">2</td><td>8 种主题，影响正能量/内驱/压力/凝聚力/纪律</td><td>正能量或凝聚力低于 55 时；考前</td></tr>
+<tr><td><b>个别谈话</b></td><td class="num">1</td><td>7 种话术，针对单个学生的万能工具</td><td><b>每週主力</b>；按「需关注」清单逐个处理</td></tr>
+<tr><td><b>家访 / 致电家长</b></td><td class="num">1</td><td>5 种话术，改善家庭支持、满意度</td><td>有「家校沟通」任务时；留守/期望过高的学生</td></tr>
+<tr><td><b>整顿纪律</b></td><td class="num">1</td><td>纪律力度 +1，全班纪律 +11、压力 +3.5、正能量 −3</td><td>违纪频发时。<b>别连续用</b>，压力会爆</td></tr>
+<tr><td><b>手机专项治理</b></td><td class="num">2</td><td>手机问题 −38、清除全班「沉迷手机」、纪律 +6；<b>全班关系 −6</b></td><td>「手机问题」气象条超过 55 时</td></tr>
+<tr><td><b>检查错题本</b></td><td class="num">1</td><td><b>全科成长上限 +0.45</b>、勤奋 +1.6；<b>执行度 +（会回落）</b></td><td>高二上尽早开始，<b>每月 1~2 次</b>维持</td></tr>
+<tr><td><b>检查计划表</b></td><td class="num">1</td><td>全班勤奋 +、压力 −1.6、内驱 +1.2；<b>执行度 +（会回落）</b></td><td>每月 1~2 次；与错题本搭配有协同</td></tr>
+<tr><td><b>团体心理辅导</b></td><td class="num">2</td><td>全班压力 −16、正能量 +7、关系 +3，化解焦虑/失眠<br><span class="mini muted">有边际递减，见下</span></td><td>平均压力 &gt; 60 或多例焦虑时</td></tr>
+<tr><td><b>培优辅导</b></td><td class="num">2</td><td>前 20% 尖子生：弱科成长 +、<b>该科上限 +1.6～4.0</b>、关系 +4</td><td>尖子生顶到成长上限时</td></tr>
+<tr><td><b>补差辅导</b></td><td class="num">2</td><td>后 25% 后进生：弱科成长 +、勤奋 +3</td><td>拉本科率 / 一本率的直接手段</td></tr>
+<tr><td><b>心理辅导</b></td><td class="num">1</td><td>3 种话术，单人压力 −16～36</td><td><b>压力 ≥ 85 的学生优先</b></td></tr>
+<tr><td><b>文体活动</b></td><td class="num">1</td><td>全班压力 −6～12、正能量 +6～13、健康 +3、<b>凝聚力 +8</b><br><span class="mini muted">有边际递减，见下</span></td><td>凝聚力跌破 50 时，性价比极高</td></tr>
+<tr><td><b>调整座位</b></td><td class="num">1</td><td>4 种排法（按成绩 / 互助结对 / 随机 / 按姓名）</td><td>互助结对可拉后进生；早恋时调开</td></tr>
+<tr><td><b>科任老师沟通</b></td><td class="num">1</td><td>沟通（配合 +10）/ 请吃饭（¥800，配合 +18、能力 +2）/ 申请换人</td><td>某科拖后腿时；换人成功率 = 声望/140</td></tr>
+<tr><td><b>任教科目加餐</b></td><td class="num">1</td><td>你所教科目全班成长 +（受你的教学能力加成）</td><td>你是该科老师，稳定收益</td></tr>
+<tr><td><b>申请学校资源</b></td><td class="num">1</td><td>成功率 = 声望/100，成功得 ¥1500–3500</td><td>缺钱且声望高时</td></tr>
+<tr><td><b>经费采购</b></td><td class="num">0</td><td>打开经费商城，<b>不消耗 AP</b></td><td>随时。<b>用经费换 AP 是核心技巧</b></td></tr>
+<tr><td><b>竞赛 / 强基报名</b></td><td class="num">1</td><td>给苗子报名，进入「竞赛集训」：该科成长 ×2.1，压力 +14</td><td>竞赛苗子特质；南山班冲清北用</td></tr>
+<tr><td><b>考前特训</b></td><td class="num">2</td><td>全班全科成长 +，压力 +7～13、正能量 −4</td><td><b>仅考试周可用</b>。大考前一周冲一把</td></tr>
+<tr><td><b>志愿填报指导</b></td><td class="num">2</td><td>全班内驱 +6～13、心态 +4、压力 −3～8、满意度 +4</td><td>高三下（第 44 周后）解锁，<b>性价比顶级</b></td></tr>
+<tr><td><b>休息一下</b></td><td class="num">0</td><td>精力 +18、压力 −14，<b>直接结束本周</b></td><td>你的压力 &gt; 70 或精力 &lt; 40 时</td></tr>
+</tbody></table></div>
+
+<div class="box tip"><span class="bt">AP 分配的黄金比例（每周 4 点）</span>
+<ul style="margin:4px 0 0">
+<li>常态周：<b>1 次个别谈话（高危学生）+ 1 次任教加餐 + 1 次文体/心理 + 1 次备用</b></li>
+<li>考试周：<b>考前特训 + 主题班会（考后复盘）</b></li>
+<li>危机周（多例焦虑/手机）：<b>团体心理辅导 / 手机专项治理优先</b>，其他全让路</li>
+<li>高三下：<b>志愿填报指导 → 任教加餐 → 补差/培优</b></li>
+</ul></div>
+
+<div class="box warn"><span class="bt">减压手段有边际递减</span>
+减压类行动（团体心理辅导、文体活动、励志动员、减压心理课、班级团建游戏）<b>短期内反复使用会衰减</b>：<br>
+同一种手段在 4 周内第 2 次用效果 ×0.8，第 3 次 ×0.6……最低 ×0.3；间隔越短衰减越多。<b>间隔满 4 周后完全恢复。</b><br>
+→ 不要每周固定「减压班会 + 文体活动」这套连招，要<b>轮换手段</b>：这周心理辅导、下周文体活动、再下周团建聚餐或请心理老师驻班。</div>
+
+<div class="box info"><span class="bt">经费 vs 行动点</span>
+经费采购<b>不消耗 AP</b>。这意味着你可以用班费「买」到原本需要 AP 才能做的事（减压、提分、正能量）。<br>
+→ <b>声望高 → 班费多 → 省下 AP 去做个别谈话与家访</b>，这是高手与新手的核心差距。</div>
+</div>
+
+<div class="chnav"><a class="pv" href="#trait"><div class="cl">← 上一章</div><div class="ct">08 特质与家庭全表</div></a><a class="nx" href="#meeting"><div class="cl">下一章 →</div><div class="ct">10 班会与四类话术</div></a></div>
+<div class="rel"><span class="rl">相关：</span><a href="#meeting">10 班会与四类话术</a><a href="#manage">11 班级管理</a><a href="#fund">12 经费商城</a></div>
+
+<h2 class="sec" id="meeting"><span class="n">10</span>班会与四类话术<span class="st">操作</span></h2>
+<div class="card">
+<div class="abs"><span class="ai">10</span><div>
+  <div class="at">8 种班会主题、7 种谈话话术、5 种家访方式、3 种心理辅导，以及竞赛 / 强基报名。</div>
+  <div class="aw"><span class="tag a">话术</span><span class="tag a">班会</span></div>
+  <div class="asec"><span class="as-l">本节：</span><a href="#meeting-h1">主题班会（2 AP，8 种）</a><a href="#meeting-h2">个别谈话（1 AP，7 种）</a><a href="#meeting-h3">家访 / 致电家长（1 AP，5 种）</a><a href="#meeting-h4">心理辅导（1 AP，3 种）</a><a href="#meeting-h5">竞赛 / 强基报名（1 AP）</a></div>
+</div></div>
+<h3 id="meeting-h1">主题班会（2 AP，8 种）</h3>
+<div class="tbl-wrap"><table>
+<thead><tr><th>主题</th><th>效果</th><th>适用</th></tr></thead>
+<tbody>
+<tr><td><b>励志动员</b></td><td>正能量 +8、内驱 +5、压力 +3、凝聚 +5</td><td>正能量低、大考前</td></tr>
+<tr><td><b>考后复盘</b></td><td>弱科成长 +0.3～0.7、勤奋 +3、正能量 −2、凝聚 +2</td><td><b>大考后第一周必开</b></td></tr>
+<tr><td><b>减压心理课</b></td><td>压力 −12、正能量 +6、班风 +4、凝聚 +4</td><td>平均压力 &gt; 60</td></tr>
+<tr><td><b>纪律整顿会</b></td><td>纪律 +10、班纪律 +8、正能量 −5、压力 +4、凝聚 −2</td><td>违纪失控时的快速手段</td></tr>
+<tr><td><b>学习方法指导</b></td><td>全班弱科成长 +0.5～1.0、凝聚 +2</td><td><b>收益最稳的班会</b>，任何时候都行</td></tr>
+<tr><td><b>理想与志愿</b></td><td>内驱 +12、压力 +2、凝聚 +3</td><td>内驱力普遍偏低时</td></tr>
+<tr><td><b>感恩教育</b></td><td>家庭支持 +5、正能量 +7、内驱 +4、家长满意度 +3、凝聚 +6</td><td>凝聚 + 满意度双收</td></tr>
+<tr><td><b>班级团建游戏</b></td><td>压力 −10、正能量 +9、<b>凝聚 +12</b>、纪律 −3</td><td><b>凝聚力最低时首选</b></td></tr>
+</tbody></table></div>
+
+<h3 id="meeting-h2">个别谈话（1 AP，7 种）</h3>
+<div class="tbl-wrap"><table>
+<thead><tr><th>话术</th><th>条件</th><th>效果</th></tr></thead>
+<tbody>
+<tr><td><b>鼓励打气</b></td><td>—</td><td>正能量 +9、压力 −5、内驱 +4、<b>关系 +9</b></td></tr>
+<tr><td><b>施压鞭策</b></td><td>—</td><td>勤奋 +9、各科成长 +、压力 +11、正能量 −3、关系 −4</td></tr>
+<tr><td><b>聊理想与目标</b></td><td>—</td><td>内驱 +11、正能量 +6、压力 −2、关系 +7（内驱 &gt;78 额外勤奋 +4）</td></tr>
+<tr><td><b>严厉批评</b></td><td>—</td><td>纪律 +11、压力 +8、正能量 −9、<b>关系 −8</b>；40% 解除手机</td></tr>
+<tr><td><b>学习方法指导</b></td><td>—</td><td>弱科成长 +0.07～0.15、勤奋 +3、关系 +5</td></tr>
+<tr><td><b>处理感情问题</b></td><td>该生早恋</td><td>解除早恋；正能量 ±、压力 ±（随机）</td></tr>
+<tr><td><b>没收手机</b></td><td>该生沉迷手机</td><td>解除手机、勤奋 +5、正能量 −6、压力 +4、关系 −5</td></tr>
+</tbody></table></div>
+
+<h3 id="meeting-h3">家访 / 致电家长（1 AP，5 种）</h3>
+<div class="tbl-wrap"><table>
+<thead><tr><th>话术</th><th>条件</th><th>效果</th></tr></thead>
+<tbody>
+<tr><td><b>报喜式沟通</b></td><td>—</td><td>家长满意度 +4、正能量 +7、内驱 +5、关系 +6</td></tr>
+<tr><td><b>通报问题</b></td><td>—</td><td>纪律 +8、压力 +9、关系 −6、满意度 −3；解除手机</td></tr>
+<tr><td><b>家校共育</b></td><td>—</td><td>家庭支持 +9、压力 −6、内驱 +4、关系 +5、满意度 +2</td></tr>
+<tr><td><b>疏导家长期望</b></td><td>期望 &gt; 70</td><td><b>期望 −16、压力 −12</b>、正能量 +6</td></tr>
+<tr><td><b>资助困难学生</b></td><td>经济 &lt; 40</td><td>花 ¥1200：经济 +22、<b>内驱 +13</b>、压力 −9、正能量 +10、声望 +2</td></tr>
+</tbody></table></div>
+
+<h3 id="meeting-h4">心理辅导（1 AP，3 种）</h3>
+<div class="tbl-wrap"><table>
+<thead><tr><th>话术</th><th>效果</th><th>代价</th></tr></thead>
+<tbody>
+<tr><td><b>倾听与疏导</b></td><td>压力 −16～26、正能量 +8、<b>关系 +10</b>、解除焦虑、健康 +5</td><td>无</td></tr>
+<tr><td><b>批假休息</b></td><td>压力 −24～36、健康 +9、解除焦虑</td><td>各科成长 −0.1～0.35、满意度 −1</td></tr>
+<tr><td><b>建议就医</b></td><td>解除焦虑、压力 −30、健康 +14、心态 +9、正能量 +8</td><td>¥800</td></tr>
+</tbody></table></div>
+
+<h3 id="meeting-h5">竞赛 / 强基报名（1 AP）</h3>
+<p>进入「竞赛集训」状态：该科成长 ×2.1，压力 +14，停课。适合<b>竞赛苗子</b>特质且单科顶尖的学生（如固定剧本里的黄春生·物理）。获奖后可获得校荐资格。</p>
+<div class="box warn"><span class="bt">警告</span>
+给非苗子报竞赛 = 白白 +14 压力且停课。只在<b>该生该科确实顶尖</b>时才用。</div>
+</div>
+
+<div class="chnav"><a class="pv" href="#action"><div class="cl">← 上一章</div><div class="ct">09 行动全解</div></a><a class="nx" href="#manage"><div class="cl">下一章 →</div><div class="ct">11 班级管理</div></a></div>
+<div class="rel"><span class="rl">相关：</span><a href="#student">07 学生档案全解</a><a href="#action">09 行动全解</a></div>
+
+<h2 class="sec" id="manage"><span class="n">11</span>班级管理<span class="st">管理</span></h2>
+<div class="card">
+<div class="abs"><span class="ai">11</span><div>
+  <div class="at">5 项政策滑块逐档详解，加座位、班干部、课代表、违纪记录、科任教师团队。</div>
+  <div class="aw"><span class="tag a">政策</span><span class="tag a">管理</span></div>
+  <div class="asec"><span class="as-l">本节：</span><a href="#manage-h1">五项政策（滑块，随时可调）</a><a href="#manage-h2">座位安排（4 种）</a><a href="#manage-h3">班干部</a><a href="#manage-h4">课代表（每科一人）</a><a href="#manage-h5">班级违纪记录</a><a href="#manage-h6">科任教师团队</a></div>
+</div></div>
+<h3 id="manage-h1">五项政策（滑块，随时可调）</h3>
+<p>管理页的政策区是双列网格，每项可拖动、也可<b>直接点下方刻度跳档</b>，档位说明会实时更新。</p>
+
+<h4>① 作业强度（1–5）</h4>
+<div class="tbl-wrap"><table>
+<thead><tr><th>档位</th><th>名称</th><th>效果</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>极少</td><td>成绩几乎停滞，学生很轻松</td></tr>
+<tr><td>2</td><td>偏少</td><td>进步缓慢，压力很低</td></tr>
+<tr><td><b>3</b></td><td><b>适中</b></td><td><b>标准配置，进步与压力平衡（推荐长期维持）</b></td></tr>
+<tr><td>4</td><td>较多</td><td>提分明显，压力开始累积</td></tr>
+<tr><td>5</td><td>题海</td><td><b>短期提分最快，压力与厌学风险极高</b></td></tr>
+</tbody></table></div>
+<p class="mini muted">机制：作业强度直接进两个公式 —— 成长速度因子 <code>0.72 + 0.11 × 档位 × (教师作业量/70)</code>，以及学生目标压力 <code>30 + (档位−1) × 7</code>。</p>
+
+<h4>② 纪律力度（1–5）</h4>
+<p>宽松 → 偏松 → 适中 → 严格 → 军事化。档位越高违纪越少，但正能量与好感受损（目标压力 ×0.85~1.2）。</p>
+<div class="tbl-wrap"><table>
+<thead><tr><th>档位</th><th>名称</th><th>16 周平均违纪</th><th>纪律氛围 classDis</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>宽松</td><td class="num">约 29 次</td><td class="num">31</td></tr>
+<tr><td>3</td><td>适中</td><td class="num">约 25 次</td><td class="num">66</td></tr>
+<tr><td>5</td><td>军事化</td><td class="num">约 14 次</td><td class="num">100</td></tr>
+</tbody></table></div>
+<p><b>推荐常年 3</b>，违纪失控或本月有「零违纪」任务时短期拉到 4~5。注意「整顿纪律」行动在已满档时收益减半。</p>
+
+<h4>③ 早读强度（1–5）</h4>
+<p>自由 → 轻声 → 齐读 → 站立 → 疯狂。<br>
+机制：记忆类科目（<b>语文、英语、历史、政治、地理、生物</b>）成长 ±3.5%/档，理科 ±1.2%/档；同时学生目标压力 ±3.0/档。<br>
+推荐常年 3；文科班或英语弱时可拉到 4。</p>
+
+<h4>④ 晚自习（1–5）</h4>
+<p>自由复习 → 统一练习 → <b>培优分层</b> → 限时训练 → 加时加练。<br>
+机制：全科成长 ±5.5%/档；<b>培优分层（档 3）额外给前 20% 与后 25% 的学生 ×1.06</b>；目标压力 ±3.6/档。<br>
+其中「培优分层」让尖子生与后进生各得其所，是综合最优档。</p>
+
+<h4>⑤ 手机管理（1–5，越低越严）</h4>
+<p>严禁携带 → <b>统一保管（最优）</b> → 限时开放 → 睁一只眼 → 完全不管。<br>
+机制：班级手机问题每周 <code>−0.6 + 难度×0.75 + (档位−2)×1.9</code>。</p>
+<div class="tbl-wrap"><table>
+<thead><tr><th>档位</th><th>名称</th><th>手机问题周变化</th><th>8 周后（初始 32）</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>严禁携带</td><td class="num">−2.05</td><td>32 → 约 16</td></tr>
+<tr><td><b>2</b></td><td><b>统一保管</b></td><td class="num">−0.15（基本持平）</td><td>32 → 约 31</td></tr>
+<tr><td>3</td><td>限时开放</td><td class="num">+1.75</td><td>32 → 约 46</td></tr>
+<tr><td>4</td><td>睁一只眼</td><td class="num">+3.65</td><td>32 → 约 61</td></tr>
+<tr><td>5</td><td>完全不管</td><td class="num">+5.55</td><td>32 → 约 76</td></tr>
+</tbody></table></div>
+<p><b>常年保持档位 2</b> 最省心；等到「手机问题」气象条高了再临时拉到档位 1 压一压。</p>
+
+<h4>周末补课（拨动开关，默认开启）</h4>
+<p>开启：成长速度 ×1.12，但学生目标压力 +7、家长不满风险上升。关闭：压力更低、进步略慢。<br>
+<b>开局默认是开启的</b>，如果你要走稳健/救火路线，记得第一周就关掉。</p>
+<div class="box tip"><span class="bt">推荐政策组合</span>
+<ul style="margin:4px 0 0">
+<li><b>稳健型</b>：作业 3 / 纪律 3 / 早读 3 / 晚自习 3（培优分层）/ 手机 2 / 补课关</li>
+<li><b>冲分型</b>（高三下）：作业 4 / 纪律 3 / 早读 4 / 晚自习 4 / 手机 2 / 补课开 —— <b>必须配合每月一次的减压手段</b></li>
+<li><b>救火型</b>（压力爆表）：作业 2 / 纪律 3 / 早读 2 / 晚自习 2 / 手机 2 / 补课关</li>
+</ul></div>
+
+<h3 id="manage-h2">座位安排（4 种）</h3>
+<div class="tbl-wrap"><table>
+<thead><tr><th>模式</th><th>效果</th></tr></thead>
+<tbody>
+<tr><td><b>按成绩排</b></td><td>默认。好学生坐前排，方便管理</td></tr>
+<tr><td><b>互助结对</b></td><td>高低分同桌，<b>后进生每周获得同桌带动（成长 +0.012/科、勤奋 +0.12）</b>，尖子生压力略增。拉本科率时推荐</td></tr>
+<tr><td><b>随机</b></td><td>打散小团体，可用来拆散早恋或违纪团伙</td></tr>
+<tr><td><b>按姓名</b></td><td>便于点名</td></tr>
+</tbody></table></div>
+<p class="mini muted">另外<b>前排更专注</b>：第 1 排学习效率 ×1.06，最后一排 ×0.97，中间线性过渡。</p>
+
+<h3 id="manage-h3">班干部</h3>
+<p>班长 / 学习委员 / 纪律委员 / 生活委员，各一人。任命时系统按纪律排序推荐前 20 名。<b>「班干部料」特质的学生当班干部效果翻倍</b>。</p>
+<p>班干部会持续影响班级纪律与正能量。纪律委员选纪律高的，学习委员选勤奋高的。</p>
+
+<h3 id="manage-h4">课代表（每科一人）</h3>
+<p>自动按「本科目水平 + 勤奋 + 纪律」选，可在管理页更换。任命时该生勤奋 +6、内驱 +7、纪律 +4。</p>
+<div class="box info"><span class="bt">课代表的双重收益</span>
+<ul style="margin:4px 0 0">
+<li><b>全班该科成长 +3.5%～14%</b>（取决于课代表本人素质：勤奋、纪律、该科水平）</li>
+<li>课代表本人该科成长更高，且每周变得更自律、更有内驱力</li>
+</ul>
+→ 六科课代表相当于<b>免费的全科加成</b>。开局务必检查一下自动任命是否合理（尤其是主科）。</div>
+
+<h3 id="manage-h5">班级违纪记录</h3>
+<p>每次违纪都记一条：时间、学生、类型、来源（谁发现的）。11 种类型：上课讲话、迟到、早退、作业缺交、课堂睡觉、自习玩手机、课间打闹、顶撞老师、上课看课外书、考试作弊嫌疑、仪容仪表不合格。</p>
+<p>管理页显示本月/累计次数，点「查看全部」可以看<b>违纪次数排行</b> + 完整分录。手机、打架、作弊、睡觉等事件也会自动入档。</p>
+<div class="box warn"><span class="bt">违纪的连锁反应</span>
+违纪 → 本月违纪计数上升 → 学校的「纪律整顿」任务失败 → 声望下降 → 班费减少。<br>
+→ 看到月度任务里有「零违纪」时，那一周务必把纪律力度拉到 4 或开一次纪律整顿会。</div>
+
+<h3 id="manage-h6">科任教师团队</h3>
+<p>每位老师有 <b>教学能力</b>、<b>作业量</b>、<b>配合度</b> 三项。你可以：</p>
+<ul>
+<li><b>拖动作业量滑块</b>（20–100，免费随时调）—— 作业越多该科涨分越快，但学生压力越大</li>
+<li><b>沟通</b>（1 AP）：配合度 +10、作业量 +3</li>
+<li><b>请吃饭</b>（¥800）：配合度 +18、能力 +2、你的压力 −3</li>
+<li><b>申请换人</b>（1 AP）：成功率 = 声望/140（最高 75%），成功则换来能力 +3 的新老师，失败声望 −4</li>
+</ul>
+<p class="mini muted">配合度影响成长速度因子 <code>0.9 + (配合度−60)/300</code>；教学能力影响 <code>0.55 + 能力/100 × 0.62</code>。<b>能力是最重要的一项</b>，遇到 55 以下的老师果断换。</p>
+<p>你所教的科目显示为「（你）」，且全班该科成长 +6%。</p>
+</div>
+
+<div class="chnav"><a class="pv" href="#meeting"><div class="cl">← 上一章</div><div class="ct">10 班会与四类话术</div></a><a class="nx" href="#fund"><div class="cl">下一章 →</div><div class="ct">12 经费商城</div></a></div>
+<div class="rel"><span class="rl">相关：</span><a href="#action">09 行动全解</a><a href="#fund">12 经费商城</a></div>
+
+<h2 class="sec" id="fund"><span class="n">12</span>经费商城<span class="st">经济</span></h2>
+<div class="card">
+<div class="abs"><span class="ai">12</span><div>
+  <div class="at">班费从哪来、12 个采购项目各自的效果与性价比、以及采购优先级。<b>经费不占行动点，是高手的核心技巧。</b></div>
+  <div class="aw"><span class="tag a">经费</span><span class="tag a">商城</span></div>
+  <div class="asec"><span class="as-l">本节：</span><a href="#fund-h1">钱从哪来</a><a href="#fund-h2">12 个采购项目</a></div>
+</div></div>
+<h3 id="fund-h1">钱从哪来</h3>
+<ul>
+<li><b>开局</b>：¥3000</li>
+<li><b>每月拨付</b>：约 <code>¥400 + 声望 × 10 ± 60</code>（大考月到账）</li>
+<li><b>完成任务</b>：每项 ¥400–1200</li>
+<li><b>申请学校资源</b>（1 AP）：成功得 ¥1500–3500，成功率 = 声望/100</li>
+</ul>
+
+<h3 id="fund-h2">12 个采购项目</h3>
+<div class="tbl-wrap"><table>
+<thead><tr><th>项目</th><th>价格</th><th>次数限制</th><th>效果</th></tr></thead>
+<tbody>
+<tr><td>📄 加印试卷与答题卡</td><td class="num">¥500</td><td>每月 2 次</td><td>全科成长 +、压力 +</td></tr>
+<tr><td>📚 订购教辅资料</td><td class="num">¥1200</td><td>每学期 2 次</td><td>全科成长明显提升（+0.07～0.11）、班风 +2</td></tr>
+<tr><td>✏️ 单科专项训练</td><td class="num">¥600</td><td>每学期 4 次</td><td>指定科目成长 +0.16～0.26（<b>指定科目</b>）</td></tr>
+<tr><td>🎓 外聘名师讲座</td><td class="num">¥2600</td><td>每学期 1 次</td><td><b>该科教师能力 +7</b> + 全班该科成长提升（指定科目）</td></tr>
+<tr><td>🏆 月考奖学金</td><td class="num">¥1800</td><td>每月 1 次</td><td>全班正能量 +13、前十内驱 +12、班风 +8、满意度 +4</td></tr>
+<tr><td>🍲 班级团建聚餐</td><td class="num">¥1500</td><td>每学期 2 次</td><td>压力 −9、正能量 +11、班风 +7、纪律 +3</td></tr>
+<tr><td>⚽ 体育器材与课间活动</td><td class="num">¥900</td><td>每学期 2 次</td><td>健康 +8、正能量 +7、压力 −6</td></tr>
+<tr><td>🧠 请心理老师驻班</td><td class="num">¥2400</td><td>每学期 1 次</td><td><b>全班压力 −16</b>，化解全部焦虑/失眠</td></tr>
+<tr><td>🪴 添置班级设施</td><td class="num">¥2000</td><td><b>整局 1 次</b></td><td>健康 +6、正能量 +7、班风 +6、纪律 +6（长期收益）</td></tr>
+<tr><td>🎤 请学长回校分享</td><td class="num">¥1600</td><td>每学期 1 次</td><td>前 15 名：内驱 +14、勤奋 +7、正能量 +8</td></tr>
+<tr><td>🎁 教师慰问礼品</td><td class="num">¥1000</td><td>每月 1 次</td><td><b>全体科任老师配合度 +9</b></td></tr>
+<tr><td>🚀 高考冲刺加油包</td><td class="num">¥3000</td><td><b>整局 1 次</b></td><td>高三下可用：正能量 +16、压力 −12、健康 +6、<b>高考发挥加成</b></td></tr>
+</tbody></table></div>
+
+<div class="box tip"><span class="bt">采购优先级</span>
+<ol style="margin:4px 0 0">
+<li><b>添置班级设施</b>（整局一次，早买早享受）</li>
+<li><b>单科专项训练 / 外聘名师</b>—— 打你的薄弱科目</li>
+<li><b>月考奖学金</b>—— 正能量性价比最高，每月可买</li>
+<li><b>教师慰问礼品</b>—— 配合度长期收益</li>
+<li><b>心理老师驻班 / 团建</b>—— 压力爆表时的急救</li>
+<li>高三下留 ¥3000 买<b>高考冲刺加油包</b></li>
+</ol></div>
+</div>
+
+<div class="chnav"><a class="pv" href="#manage"><div class="cl">← 上一章</div><div class="ct">11 班级管理</div></a><a class="nx" href="#task"><div class="cl">下一章 →</div><div class="ct">13 学校月度任务</div></a></div>
+<div class="rel"><span class="rl">相关：</span><a href="#action">09 行动全解</a><a href="#task">13 学校月度任务</a></div>
+
+<h2 class="sec" id="task"><span class="n">13</span>学校月度任务<span class="st">考核</span></h2>
+<div class="card">
+<div class="abs"><span class="ai">13</span><div>
+  <div class="at">学校每月下发的考核任务有哪些类型、怎么达成，以及完成与失败的收益差。</div>
+  <div class="aw"><span class="tag a">任务</span><span class="tag a">声望</span></div>
+</div></div>
+<p>每次大考后结算当前任务，然后生成 2–3 个新任务。<br>
+<b>完成</b>：声望 +3～7、经费 +¥400–1200　　　<b>失败</b>：声望 −2～5</p>
+<div class="tbl-wrap"><table>
+<thead><tr><th>任务</th><th>要求</th><th>怎么达成</th></tr></thead>
+<tbody>
+<tr><td><b>均分达标</b></td><td>大考班级均分达到目标值</td><td>考前特训、任教加餐、单科专项训练</td></tr>
+<tr><td><b>同类班排名</b></td><td>同类班级中排名进前 60%</td><td>综合提升；关注成绩页的同类排名</td></tr>
+<tr><td><b>进步人数</b></td><td>相比上次大考进步人数达标</td><td>补差辅导（后进生最容易进步）</td></tr>
+<tr><td><b>纪律整顿</b></td><td>本月违纪次数不超过目标值</td><td><b>把纪律力度拉到 4</b>、整顿纪律、手机专项治理</td></tr>
+<tr><td><b>家校沟通</b></td><td>本月家访 / 致电次数达标</td><td>每月留 1–3 个 AP 做家访（顺手改善家庭支持）</td></tr>
+<tr><td><b>师生谈心</b></td><td>本月个别谈话次数达标</td><td>每月 3–6 次谈话，本来就该做</td></tr>
+<tr><td><b>上线指标</b></td><td>按层级：南山班 985 人数 / 特尖班双一流 / 尖子班一本 / 艺体班双上线</td><td>补差 + 培优，盯着目标线附近的学生</td></tr>
+<tr><td><b>尖子生培养</b></td><td>年级前 200 名中本班人数达标</td><td>培优辅导、学长分享、竞赛报名</td></tr>
+<tr><td><b>班级氛围</b></td><td>平均正能量达到目标值</td><td>励志班会、奖学金、文体活动、团建</td></tr>
+</tbody></table></div>
+<div class="box info"><span class="bt">声望是硬通货</span>
+声望决定：每月班费拨付额、申请资源的成功率、申请换老师的成功率。<br>
+→ 每月务必完成 2 个以上任务。声望跌到 30 以下会陷入「没钱 → 没手段 → 完不成任务 → 更没钱」的死亡螺旋。</div>
+</div>
+
+<div class="chnav"><a class="pv" href="#fund"><div class="cl">← 上一章</div><div class="ct">12 经费商城</div></a><a class="nx" href="#event"><div class="cl">下一章 →</div><div class="ct">14 事件应对</div></a></div>
+<div class="rel"><span class="rl">相关：</span><a href="#fund">12 经费商城</a><a href="#time">03 时间轴与考试</a></div>
+
+<div class="part p4">
+  <div class="pn"><b>PART IV</b>从会玩到精通</div>
+  <h2>把 B 打成 S<span class="pr">14–19</span></h2>
+  <div class="pd">会操作和玩得好是两回事。这几章讲的是判断力：什么时候该忍、什么时候该赌、哪些坑所有人都会踩。</div>
+  <div class="pchips">
+    <a href="#event">14 事件应对</a><a href="#mechanic">15 数值链条</a><a href="#result">16 高考与评分</a><a href="#strategy">17 进阶策略</a><a href="#mis">18 常见误区</a><a href="#appendix">19 数值速查表</a>
+  </div>
+</div>
+<h2 class="sec" id="event"><span class="n">14</span>事件应对<span class="st">决策</span></h2>
+<div class="card">
+<div class="abs"><span class="ai">14</span><div>
+  <div class="at">常见事件的权重、每个选项的核心取舍，以及通用的决策原则。</div>
+  <div class="aw"><span class="tag a">事件</span><span class="tag a">决策</span></div>
+</div></div>
+<p>每周推进后有 <b>42%</b> 概率触发一个随机事件，每个事件 3–4 个选项，后果各不相同。</p>
+<div class="box bad"><span class="bt">事件不能跳过</span>
+事件弹窗是<b>强制选择</b>的。直接点遮罩或 × 会被判定为「放任不管」：该生压力 +6、正能量 −5、关系 −4，<b>声望 −2</b>、班级纪律 −3、家长满意度 −2，并照常记入违纪。<br>
+负面事件只会越拖越糟，务必当场处理。</div>
+<p>
+24 种事件（括号内为相对权重，越大越常见）：</p>
+<div class="tbl-wrap"><table>
+<thead><tr><th>事件</th><th>权重</th><th>核心取舍</th></tr></thead>
+<tbody>
+<tr><td><b>手机事件</b></td><td class="num">10</td><td>当场没收（纪律↑关系↓）/ 通知家长（效果强但满意度↓）/ 冷处理 / 装没看见</td></tr>
+<tr><td><b>早恋风波</b></td><td class="num">9</td><td>分别谈话（温和，72% 化解）/ 通知家长（强效但正能量−14）/ 调座位 / 顺其自然</td></tr>
+<tr><td><b>家长投诉：作业太多</b></td><td class="num">7</td><td>适当减量（作业−1，压力−7、满意度+7）/ 坚持 / 解释沟通</td></tr>
+<tr><td><b>心理预警</b></td><td class="num">6</td><td><b>优先处理</b>。及时干预可避免成绩与健康长期受损</td></tr>
+<tr><td><b>突发疾病</b></td><td class="num">6</td><td>送医 / 通知家长 / 垫付医药费（花经费换健康与关系）</td></tr>
+<tr><td><b>学生冲突</b></td><td class="num">5</td><td>调解 / 各打五十大板 / 通知家长 / 记过</td></tr>
+<tr><td><b>上课睡觉</b></td><td class="num">5</td><td>提醒 / 谈话了解原因 / 罚站（纪律↑正能量↓）</td></tr>
+<tr><td><b>流动红旗评比</b></td><td class="num">5</td><td>争取（看纪律与班风）/ 顺其自然；获得红旗高考评分 +1.5/面</td></tr>
+<tr><td><b>集体低迷</b></td><td class="num">5</td><td>励志班会 / 减压 / 放假调整</td></tr>
+<tr><td><b>考试作弊</b></td><td class="num">4</td><td>严肃处理（记过）/ 私下谈话 / 通报家长</td></tr>
+<tr><td><b>竞赛机会</b></td><td class="num">4</td><td>推荐苗子（该科成长 ×2.1）/ 不参加（稳妥）</td></tr>
+<tr><td><b>科任老师请假</b></td><td class="num">4</td><td>自己代课 / 调课 / 自习</td></tr>
+<tr><td><b>班级流感</b></td><td class="num">4</td><td>停课消毒 / 坚持上课 / 买药（花经费）</td></tr>
+<tr><td><b>领导推门听课</b></td><td class="num">4</td><td>精心准备（声望↑）/ 常态上课</td></tr>
+<tr><td><b>周末补课之议</b></td><td class="num">4</td><td>赞成补课（成绩↑压力↑满意度↓）/ 反对（双休）</td></tr>
+<tr><td><b>黑马逆袭</b></td><td class="num">4</td><td>正向事件，顺势表扬</td></tr>
+<tr><td><b>课桌里的课外书</b></td><td class="num">4</td><td>没收 / 引导阅读 / 装没看见</td></tr>
+<tr><td><b>家长送礼</b></td><td class="num">4</td><td><b>坚决拒收</b>（声望↑）/ 收下（经费↑声望↓风险）</td></tr>
+<tr><td><b>学霸转学</b></td><td class="num">3</td><td>挽留 / 放行</td></tr>
+<tr><td><b>校园欺凌</b></td><td class="num">3</td><td><b>必须严肃处理</b>，否则后果严重</td></tr>
+<tr><td><b>一封匿名信</b></td><td class="num">3</td><td>调查 / 公开回应 / 搁置</td></tr>
+<tr><td><b>家庭变故</b></td><td class="num">3</td><td>家访安抚 / 心理辅导 / 同学关怀</td></tr>
+<tr><td><b>运动会报名</b></td><td class="num">5</td><td>积极组织（正能量+凝聚+）/ 敷衍（错失减压机会）</td></tr>
+<tr><td><b>艺考集训</b></td><td class="num">3</td><td>批准（专业分↑文化课↓）/ 限制时间</td></tr>
+</tbody></table></div>
+<div class="box tip"><span class="bt">通用决策原则</span>
+<ul style="margin:4px 0 0">
+<li><b>涉及学生身心健康</b>（心理预警、欺凌、突发疾病、家庭变故）→ 永远选最稳妥、最关心的那个选项</li>
+<li><b>涉及纪律</b> → 若本月有「零违纪」任务，选严的；否则选中等的</li>
+<li><b>涉及家长</b> → 通报类选项几乎都会掉满意度与关系，除非必要别选</li>
+<li><b>送礼 / 作弊</b> → 拒收、严肃处理，长期收益更高</li>
+</ul></div>
+</div>
+
+<div class="chnav"><a class="pv" href="#task"><div class="cl">← 上一章</div><div class="ct">13 学校月度任务</div></a><a class="nx" href="#mechanic"><div class="cl">下一章 →</div><div class="ct">15 核心数值链条</div></a></div>
+<div class="rel"><span class="rl">相关：</span><a href="#student">07 学生档案全解</a><a href="#mechanic">15 核心数值链条</a></div>
+
+<h2 class="sec" id="mechanic"><span class="n">15</span>核心数值链条<span class="st">总览</span></h2>
+<div class="card">
+<div class="abs"><span class="ai">15</span><div>
+  <div class="at">压力链、正能量链、成长链、班级气象、你自己的状态 —— 五条互相咬合的数值链。</div>
+  <div class="aw"><span class="tag a">机制</span><span class="tag a">链条</span></div>
+  <div class="asec"><span class="as-l">本节：</span><a href="#mechanic-h1">① 压力链（最重要）</a><a href="#mechanic-h2">② 正能量链</a><a href="#mechanic-h3">③ 成长链</a><a href="#mechanic-h4">④ 班级气象（总览面板）</a><a href="#mechanic-h5">⑤ 你自己的状态</a></div>
+</div></div>
+<p>理解这几条链，你就理解了整个游戏。</p>
+
+<h3 id="mechanic-h1">① 压力链（最重要）</h3>
+<div class="chain">
+<span class="node">作业强度</span><i>+</i><span class="node">学期（越高越狠）</span><i>+</i><span class="node">周末补课</span><i>+</i><span class="node">家长期望</span><i>+</i><span class="node dn">心态低</span><i>+</i><span class="node dn">班风差</span><i>→</i><span class="node">目标压力</span><i>→</i><span class="node dn">实际压力（每周向目标回归 18%）</span>
+</div>
+<div class="chain">
+<span class="node dn">压力 &gt; 38</span><i>→</i><span class="node dn">学习效率下降</span><i>→</i><span class="node dn">成长变慢</span><i>→</i><span class="node dn">成绩下滑</span><i>→</i><span class="node dn">正能量↓压力↑</span>
+</div>
+<div class="chain">
+<span class="node dn">压力 ≥ 86</span><i>→</i><span class="node dn">焦虑失眠（+16 压力）</span><i>→</i><span class="node dn">压力 ≥ 92</span><i>→</i><span class="node dn">健康持续下滑 → 成绩崩塌</span>
+</div>
+<div class="box bad"><span class="bt">压力是唯一会「自我加速」的负面数值</span>
+焦虑状态本身 +16 压力，会让压力进一步失控，健康跟着掉。<b>看到焦虑标签必须当周处理</b>，拖得越久，回来补的代价越大。</div>
+
+<h3 id="mechanic-h2">② 正能量链</h3>
+<div class="chain">
+<span class="node up">正能量</span><i>+</i><span class="node up">内驱力</span><i>+</i><span class="node up">勤奋</span><i>+</i><span class="node up">班级凝聚力</span><i>+</i><span class="node up">师生关系</span><i>=</i><span class="node ac">学习效率</span><i>→</i><span class="node ac">成长速度</span>
+</div>
+<p>正能量每周向 55 回归 6%（自然衰减），所以<b>需要持续投入</b>维持。凝聚力每周自然 −0.9，靠班会/文体/团建补回来。</p>
+
+<h3 id="mechanic-h3">③ 成长链</h3>
+<div class="chain">
+<span class="node">基础成长 0.11</span><i>×</i><span class="node">学期难度</span><i>×</i><span class="node">补课系数</span><i>×</i><span class="node">剩余空间</span><i>×</i><span class="node ac">学习效率</span><i>×</i><span class="node">教师能力</span><i>×</i><span class="node">作业因子</span><i>×</i><span class="node">教师配合度</span><i>×</i><span class="node up">课代表加成</span><i>=</i><span class="node">本科成长值</span>
+</div>
+<p>额外乘数：①你所教科目 ×1.06　②竞赛集训科目 ×2.1　③一对一辅导状态 ×1.35</p>
+<p class="mini muted">「剩余空间」= 1 − (当前水平/上限)² × 0.55，范围 0.35–1。<b>越接近上限涨得越慢</b> —— 这就是为什么后期要靠「抬上限」而不是硬刷题。</p>
+
+<h3 id="mechanic-h4">④ 班级气象（总览面板）</h3>
+<div class="tbl-wrap"><table>
+<thead><tr><th>指标</th><th>好</th><th>坏</th><th>变化规律</th></tr></thead>
+<tbody>
+<tr><td><b>凝聚力</b></td><td>高</td><td>低</td><td>每周 −0.9，受班风/纪律微调；班会、团建、文体补回</td></tr>
+<tr><td><b>班风</b></td><td>高</td><td>低</td><td>学生平均正能量的 60% 加权</td></tr>
+<tr><td><b>手机问题</b></td><td class="muted">低</td><td class="muted">高</td><td>每周 +1.3 + 难度×0.5 − (手机管理档−2)×2.2</td></tr>
+<tr><td><b>师生关系</b></td><td>高</td><td>低</td><td>全班平均；批评/没收会掉</td></tr>
+<tr><td><b>家长期望</b></td><td>中</td><td>过高</td><td>过高会推高学生压力</td></tr>
+</tbody></table></div>
+
+<h3 id="mechanic-h5">⑤ 你自己的状态</h3>
+<div class="chain">
+<span class="node dn">你的压力</span><i>↑</i><span class="node">（作业/纪律强度、补课、投诉、学期）</span><i>→</i><span class="node dn">&gt;78 时每周 AP −1</span>
+</div>
+<div class="chain">
+<span class="node up">你的精力</span><i>↓</i><span class="node">（每周 −1.5，加班更狠）</span><i>→</i><span class="node up">&gt;75 时 AP +1</span><i>，</i><span class="node dn">&lt;35 时 AP −1</span>
+</div>
+<p>「休息一下」不消耗 AP 且直接结束本周：精力 +18、压力 −14。<b>每月至少休息一次</b>，否则长期损失 1–2 AP/周，远超一次加班的收益。</p>
+</div>
+
+<div class="chnav"><a class="pv" href="#event"><div class="cl">← 上一章</div><div class="ct">14 事件应对</div></a><a class="nx" href="#result"><div class="cl">下一章 →</div><div class="ct">16 高考与评分</div></a></div>
+<div class="rel"><span class="rl">相关：</span><a href="#score">05 成绩是怎么算的</a><a href="#student">07 学生档案全解</a></div>
+
+<h2 class="sec" id="result"><span class="n">16</span>高考与评分<span class="st">结算</span></h2>
+<div class="card">
+<div class="abs"><span class="ai">16</span><div>
+  <div class="at">高考怎么算分、各层级的评估权重、S–D 评级门槛，以及冲 S 的要点。</div>
+  <div class="aw"><span class="tag a">评分</span><span class="tag a">评级</span></div>
+  <div class="asec"><span class="as-l">本节：</span><a href="#result-h1">高考流程</a><a href="#result-h2">评分构成</a><a href="#result-h3">评级</a><a href="#result-h4">结局页展示</a></div>
+</div></div>
+<h3 id="result-h1">高考流程</h3>
+<p>第 64 周自动进入高考。此前第 55、59 周有两次模拟考（可用来校准策略）。<br>
+高考前若买了「高考冲刺加油包」，会应用<b>高考发挥加成</b>（全科成长 +0.9×次数、心态 +4）。</p>
+
+<h3 id="result-h2">评分构成</h3>
+<p>基础分 = 按班级层级的<b>加权上线达成率 × 100</b>：</p>
+<div class="tbl-wrap"><table>
+<thead><tr><th>层级</th><th>清北</th><th>985</th><th>双一流</th><th>一本</th><th>本科</th></tr></thead>
+<tbody>
+<tr><td>南山班</td><td class="num">0.10</td><td class="num">0.25</td><td class="num">0.30</td><td class="num">0.35</td><td>—</td></tr>
+<tr><td>特尖班</td><td>—</td><td class="num">0.15</td><td class="num">0.30</td><td class="num">0.35</td><td class="num">0.20</td></tr>
+<tr><td>尖子班</td><td>—</td><td class="num">0.05</td><td class="num">0.20</td><td class="num">0.45</td><td class="num">0.30</td></tr>
+<tr><td>重点班</td><td>—</td><td>—</td><td class="num">0.10</td><td class="num">0.35</td><td class="num">0.55</td></tr>
+<tr><td>艺体班</td><td>—</td><td>—</td><td class="num">0.10</td><td class="num">0.30</td><td class="num">0.60</td></tr>
+</tbody></table></div>
+<p>然后加减：</p>
+<ul>
+<li><b>进步分</b>：全班均分相比开学考的提升 ÷ 4（上限 +16，下限 −10）</li>
+<li><b>家长满意度</b>：(满意度 − 60) ÷ 8（±6）</li>
+<li><b>投诉扣分</b>：每次 −1.5</li>
+<li><b>流动红旗</b>：每面 +1.5</li>
+</ul>
+<p>最终限制在 0–100。</p>
+
+<h3 id="result-h3">评级</h3>
+<div class="tbl-wrap"><table>
+<thead><tr><th>评级</th><th>分数</th><th>称号</th></tr></thead>
+<tbody>
+<tr><td><span class="tag p">S</span></td><td>≥ 80</td><td>传奇班主任</td></tr>
+<tr><td><span class="tag a">A</span></td><td>≥ 64</td><td>名师</td></tr>
+<tr><td><span class="tag b">B</span></td><td>≥ 48</td><td>优秀班主任</td></tr>
+<tr><td><span class="tag y">C</span></td><td>≥ 32</td><td>合格班主任</td></tr>
+<tr><td><span class="tag r">D</span></td><td>&lt; 32</td><td>待改进班主任</td></tr>
+</tbody></table></div>
+
+<h3 id="result-h4">结局页展示</h3>
+<ul>
+<li>评级大字 + 称号 + 评语</li>
+<li>班级均分、相比开学考的进步</li>
+<li>各线（清北 / 985 / 双一流 / 一本 / 本科 / 专科）上线人数</li>
+<li><b>光荣榜</b>：前十名及其全区排名与去向</li>
+<li>最终凝聚力、师生关系</li>
+</ul>
+<div class="box tip"><span class="bt">冲 S 的关键</span>
+<ol style="margin:4px 0 0">
+<li><b>全员留在班上</b> —— 高压学生一定要及时干预，一个长期压力 90+ 的学生等于白丢几十分</li>
+<li><b>进步分拉满</b>（+16）—— 均分比开学考涨 64 分以上，靠补差辅导最划算</li>
+<li><b>盯着本层级的核心指标</b> —— 权重最高的就是你的考核目标</li>
+<li><b>拿流动红旗</b> —— 每面 +1.5，事件里积极争取</li>
+<li><b>家长满意度维持 70 以上</b> —— 白送的分数</li>
+</ol></div>
+</div>
+
+<div class="chnav"><a class="pv" href="#mechanic"><div class="cl">← 上一章</div><div class="ct">15 核心数值链条</div></a><a class="nx" href="#strategy"><div class="cl">下一章 →</div><div class="ct">17 进阶策略</div></a></div>
+<div class="rel"><span class="rl">相关：</span><a href="#strategy">17 进阶策略</a><a href="#appendix">19 数值速查表</a></div>
+
+<h2 class="sec" id="strategy"><span class="n">17</span>进阶策略<span class="st">策略</span></h2>
+<div class="card">
+<div class="abs"><span class="ai">17</span><div>
+  <div class="at">四个学期的节奏、按班级层次的分层打法、三种流派、每周例行检查清单。</div>
+  <div class="aw"><span class="tag a">策略</span><span class="tag a">进阶</span></div>
+  <div class="asec"><span class="as-l">本节：</span><a href="#strategy-h1">四个学期的节奏</a><a href="#strategy-h2">分层打法</a><a href="#strategy-h3">三种流派</a><a href="#strategy-h4">每周例行检查清单</a></div>
+</div></div>
+<h3 id="strategy-h1">四个学期的节奏</h3>
+<div class="tbl-wrap"><table>
+<thead><tr><th>学期</th><th>主题</th><th>重点动作</th><th>避免</th></tr></thead>
+<tbody>
+<tr><td><b>高二上</b></td><td>打地基</td><td>开始错题本与计划表（尽早）、检查课代表任命、班干部就位、摸清高危学生名单、政策调到稳健档</td><td>别急着拉作业强度，此时压力低、收益小</td></tr>
+<tr><td><b>高二下</b></td><td>养成期</td><td>培优辅导抬上限、单科专项训练打弱科、开始关注手机问题、每月完成任务攒声望</td><td>别让压力突破 55</td></tr>
+<tr><td><b>高三上</b></td><td>冲刺期</td><td>补差辅导拉下限、外聘名师、月考奖学金维持正能量、压力管理成为日常</td><td>连续高压操作，此时压力自然 +12</td></tr>
+<tr><td><b>高三下</b></td><td>收割期</td><td>志愿填报指导（第 44 周后，性价比顶级）、高考冲刺加油包、考前特训、模拟考校准</td><td>别在最后一周搞大动作，稳住就行</td></tr>
+</tbody></table></div>
+
+<h3 id="strategy-h2">分层打法</h3>
+<h4>南山班（21–24，冲 985 / 清北）</h4>
+<ul>
+<li><b>别管本科率</b>，你的权重在 985（0.25）+ 一本（0.35）。</li>
+<li>前十名每人都要单独经营：培优抬上限 → 竞赛/强基报名 → 学长分享 → 一对一辅导。</li>
+<li>竞赛苗子必报（该科成长 ×2.1），但注意压力 +14，配一个减压手段。</li>
+<li>分数在 985 线上下浮动的学生（物理类 588 / 历史类 594）是<b>边际收益最高的人群</b>，补他们最划算。</li>
+</ul>
+
+<h4>特尖班（17–20、25–26，冲双一流）</h4>
+<ul>
+<li>权重：双一流 0.30 + 一本 0.35 + 本科 0.20。<b>先保一本、再冲双一流</b>。</li>
+<li>中间层（总分层级 55–65）是主力，补差辅导 + 单科专项训练双管齐下。</li>
+</ul>
+
+<h4>尖子班（7–16、27–28，冲一本）</h4>
+<ul>
+<li>权重：一本 0.45 + 本科 0.30。<b>把一本线附近的人往上推</b>是全部工作。</li>
+<li>后进生用「互助结对」座位 + 补差辅导拉本科，尖子生用培优冲一本。</li>
+</ul>
+
+<h4>重点班 / 艺体班（1–6、29–30，冲本科）</h4>
+<ul>
+<li>权重：本科 0.55（艺体 0.60）。<b>本科率就是一切</b>。</li>
+<li>纪律是首要问题：纪律力度 4 + 定期整顿纪律 + 手机专项治理。</li>
+<li>补差辅导每周做，内驱力靠励志班会 + 志愿指导。</li>
+<li>艺体班注意文化课与专业集训的平衡（专业集训会 −6% 成绩）。</li>
+</ul>
+
+<h3 id="strategy-h3">三种流派</h3>
+<div class="grid g3">
+<div class="kv"><div class="k"><span>🐢 稳健流</span><span class="tag g">推荐新手</span></div>
+<div class="v" style="font-size:14px">作业 3 · 压力 ≤ 55</div>
+<div class="d">常年维持作业 3 / 纪律 3 / 手机 2。每月 1 次减压、1 次文体。成绩涨得慢但绝不崩，稳定 B–A。</div></div>
+<div class="kv"><div class="k"><span>🔥 高压流</span><span class="tag r">高风险</span></div>
+<div class="v" style="font-size:14px">作业 5 · 冲分快</div>
+<div class="d">作业 5 + 补课 + 晚自习加时。高三上能冲到很高，但必须每月轮换不同的减压手段兜底（心理辅导 → 文体 → 心理老师驻班 → 团建），否则压力必然失控。</div></div>
+<div class="kv"><div class="k"><span>💰 经费流</span><span class="tag a">高手向</span></div>
+<div class="v" style="font-size:14px">用钱换 AP</div>
+<div class="d">全力做任务攒声望 → 班费充裕 → 用采购替代 AP 操作 → 省下的 AP 全投个别谈话与家访。上限最高。</div></div>
+</div>
+
+<h3 id="strategy-h4">每周例行检查清单</h3>
+<ol>
+<li><b>总览 → 需关注清单</b>：有没有压力 ≥ 85 或带焦虑标签的？有 → 心理辅导优先。</li>
+<li><b>班风气象</b>：凝聚力 &lt; 50 → 文体活动；手机问题 &gt; 55 → 手机专项治理。</li>
+<li><b>事务页</b>：本月任务有没有「家校沟通 / 师生谈心 / 零违纪」？有 → 相应调整这一周的 AP 分配。</li>
+<li><b>你的压力 &gt; 70 或精力 &lt; 40</b> → 这周就休息。</li>
+<li><b>大考周</b> → 考前特训 + 考后复盘班会。</li>
+</ol>
+</div>
+
+<div class="chnav"><a class="pv" href="#result"><div class="cl">← 上一章</div><div class="ct">16 高考与评分</div></a><a class="nx" href="#mis"><div class="cl">下一章 →</div><div class="ct">18 常见误区</div></a></div>
+<div class="rel"><span class="rl">相关：</span><a href="#result">16 高考与评分</a><a href="#mis">18 常见误区</a></div>
+
+<h2 class="sec" id="mis"><span class="n">18</span>常见误区<span class="st">避坑</span></h2>
+<div class="card">
+<div class="abs"><span class="ai">18</span><div>
+  <div class="at">8 个新手最容易踩的坑，每条都给了正确做法。玩到 B 上不去的时候来看这一章。</div>
+  <div class="aw"><span class="tag a">误区</span><span class="tag a">避坑</span></div>
+</div></div>
+<div class="box bad"><span class="bt">误区 1：作业强度拉满就能赢</span>
+压力 &gt; 38 后效率开始掉，&gt; 86 触发焦虑，&gt; 92 持续掉健康。<b>别以为高压能一直白嫖分数</b>，焦虑 + 健康崩塌会让成绩在高三下反噬。<br>
+正确做法：作业 3 常驻，只在高三下冲分期短暂拉到 4，并配减压手段。</div>
+
+<div class="box bad"><span class="bt">误区 2：忽视经费</span>
+经费采购<b>不占行动点</b>。不用经费 = 白白浪费每周 2–3 个额外操作。<br>
+正确做法：每月优先买「奖学金」+「单科专项训练」，留 ¥3000 给高三的加油包。</div>
+
+<div class="box bad"><span class="bt">误区 3：平均分配 AP</span>
+50 多个学生不可能都顾到。<b>80% 的收益来自 20% 的学生</b>。<br>
+正确做法：重点关注「需关注」清单里的高危学生 + 本层级核心指标线附近的学生。</div>
+
+<div class="box bad"><span class="bt">误区 4：一直批评、从不表扬</span>
+师生关系低于 35 时，你的谈话效果大打折扣。<br>
+正确做法：批评完记得补一次「鼓励打气」或「倾听疏导」把关系拉回来。</div>
+
+<div class="box bad"><span class="bt">误区 5：不看方向划线</span>
+历史类线比物理类高（本科 452 vs 442、一本 518 vs 508）。用物理类的直觉判断历史方向班会误判。<br>
+正确做法：始终以总览显示的<b>本方向</b>分数线为准。</div>
+
+<div class="box bad"><span class="bt">误区 6：以为卷面分就是最终分</span>
+化生政地四科是<b>等级赋分 30–100</b>。卷面 65 分可能赋到 78，也可能只有 58。<br>
+正确做法：看成绩单里标注「赋分」的列，以赋分后的分数判断强弱科。</div>
+
+<div class="box bad"><span class="bt">误区 7：成长顶到上限还在硬刷</span>
+成长值顶到上限后这科再也涨不动，继续投入是纯浪费。<br>
+正确做法：学生面板看「成长 X / 上限 Y」，顶格了就去做<b>培优辅导 / 检查错题本 / 名师讲座</b>抬上限。</div>
+
+<div class="box bad"><span class="bt">误区 8：从不休息</span>
+你的压力 &gt; 78 每周少 1 AP，精力 &lt; 35 再少 1 AP。连续十几周就是十几二十个 AP 的损失。<br>
+正确做法：每月至少「休息一下」一次。</div>
+
+<hr class="sep">
+<div class="box tip"><span class="bt">最后一句话</span>
+这个游戏的核心不是「把每一项都拉满」，而是<b>在压力、正能量、成绩三者之间维持动态平衡</b>。<br>
+把学生当人看 —— 该减压时减压，该施压时施压，该谈心时谈心 —— 分数自然会来。</div>
+<a href="#index" class="toc-jump">↑ 回到目录</a>
+</div>
+
+<div class="chnav"><a class="pv" href="#strategy"><div class="cl">← 上一章</div><div class="ct">17 进阶策略</div></a><a class="nx" href="#appendix"><div class="cl">下一章 →</div><div class="ct">19 数值速查表</div></a></div>
+<div class="rel"><span class="rl">相关：</span><a href="#action">09 行动全解</a><a href="#mechanic">15 核心数值链条</a></div>
+
+
+<h2 class="sec" id="appendix"><span class="n">19</span>数值速查表<span class="st">附录</span></h2>
+<div class="card">
+<div class="abs"><span class="ai">19</span><div>
+  <div class="at">所有关键阈值、公式、分数线集中在这一章。玩到一半忘了某个数字，直接来这里翻。</div>
+  <div class="aw"><span class="tag a">速查</span><span class="tag a">附录</span><span class="tag a">8 张表</span></div>
+  <div class="asec"><span class="as-l">本节：</span><a href="#appendix-h1">分数线（高考最终线，高二会按阶段系数下浮）</a><a href="#appendix-h2">压力阈值（学生个体）</a><a href="#appendix-h3">班级气象阈值</a><a href="#appendix-h4">政策档位速查</a><a href="#appendix-h5">行动点（AP）</a><a href="#appendix-h6">成长与上限</a><a href="#appendix-h7">高考评分</a><a href="#appendix-h8">减压手段的边际递减</a></div>
+</div></div>
+
+<h3 id="appendix-h1">分数线（高考最终线，高二会按阶段系数下浮）</h3>
+<div class="tbl-wrap"><table>
+<thead><tr><th>线段</th><th>物理方向</th><th>历史方向</th><th>哪一层的考核目标</th></tr></thead>
+<tbody>
+<tr><td><b>清北线</b></td><td class="num">668</td><td class="num">674</td><td>只在光荣榜统计</td></tr>
+<tr><td><b>985 线</b></td><td class="num">588</td><td class="num">594</td><td><span class="tag p">南山班</span>核心指标</td></tr>
+<tr><td><b>双一流线</b></td><td class="num">552</td><td class="num">558</td><td><span class="tag b">特尖班</span>核心指标</td></tr>
+<tr><td><b>一本线</b></td><td class="num">508</td><td class="num">518</td><td><span class="tag a">尖子班</span>核心指标</td></tr>
+<tr><td><b>本科线</b></td><td class="num">442</td><td class="num">452</td><td><span class="tag y">重点班 / 艺体班</span>核心指标</td></tr>
+<tr><td>专科线</td><td class="num">240</td><td class="num">270</td><td>—</td></tr>
+</tbody></table></div>
+<div class="tbl-cap">阶段系数：高二上 ×0.930 → 高二下 ×0.945 → 高三上 ×0.975 → 高三下 ×1.000。</div>
+
+<h3 id="appendix-h2">压力阈值（学生个体）</h3>
+<div class="tbl-wrap"><table>
+<thead><tr><th>压力</th><th>后果</th></tr></thead>
+<tbody>
+<tr><td class="num">&gt; 38</td><td>学习效率开始线性下降</td></tr>
+<tr><td class="num">≥ 80</td><td>每周 6% 概率触发「失眠」</td></tr>
+<tr><td class="num">≥ 86</td><td>每周 14% 概率触发「焦虑失眠」（本身再 +16 压力）</td></tr>
+<tr><td class="num">≥ 92</td><td>每周额外掉 1.4 点健康</td></tr>
+<tr><td class="num">100</td><td>学习效率只剩约 45%</td></tr>
+</tbody></table></div>
+<div class="box tip"><span class="bt">经验值</span>把全班平均压力控制在 <b>40–55</b> 是收益最好的区间；超过 65 就该安排减压了。</div>
+
+<h3 id="appendix-h3">班级气象阈值</h3>
+<div class="tbl-wrap"><table>
+<thead><tr><th>指标</th><th>健康区间</th><th>报警线</th><th>怎么拉回来</th></tr></thead>
+<tbody>
+<tr><td><b>凝聚力</b></td><td>60–100</td><td>&lt; 50</td><td>文体活动（+8）、班会、团建聚餐</td></tr>
+<tr><td><b>班级纪律</b></td><td>65–100</td><td>&lt; 50</td><td>整顿纪律（+11）、提高纪律力度</td></tr>
+<tr><td><b>手机问题</b></td><td>0–40</td><td>&gt; 55</td><td>手机专项治理（−38）、手机管理调到 1</td></tr>
+<tr><td><b>师生关系</b></td><td>55–100</td><td>&lt; 35</td><td>鼓励打气、倾听疏导、别连着批评</td></tr>
+<tr><td><b>家长满意度</b></td><td>70–100</td><td>&lt; 45</td><td>家访报喜、通报沟通、资助困难生</td></tr>
+</tbody></table></div>
+
+<h3 id="appendix-h4">政策档位速查</h3>
+<div class="tbl-wrap"><table>
+<thead><tr><th>政策</th><th>推荐档</th><th>每档变化</th><th>备注</th></tr></thead>
+<tbody>
+<tr><td><b>作业强度</b></td><td class="num">3</td><td>成长 ±、压力 ±7/档</td><td>高三下可短暂拉到 4</td></tr>
+<tr><td><b>纪律力度</b></td><td class="num">3</td><td>违纪 ±、压力 ×0.85~1.2</td><td>违纪失控时拉到 4–5；满档后整顿收益减半</td></tr>
+<tr><td><b>早读强度</b></td><td class="num">3</td><td>记忆类科目 ±3.5%/档、压力 ±3.0/档</td><td>文科班 / 英语弱可拉到 4</td></tr>
+<tr><td><b>晚自习</b></td><td class="num">3</td><td>全科 ±5.5%/档、压力 ±3.6/档</td><td><b>培优分层（3）综合最优</b>，两端额外 ×1.06</td></tr>
+<tr><td><b>手机管理</b></td><td class="num">2</td><td>手机问题 ±1.9/周每档</td><td><b>档 2（统一保管）≈ 持平</b>，是最省心的设置</td></tr>
+<tr><td>周末补课</td><td>按需</td><td>成长 ×1.12、压力 +6</td><td>高三开，高二看情况</td></tr>
+</tbody></table></div>
+
+<h3 id="appendix-h5">行动点（AP）</h3>
+<ul>
+<li>基础 <b>4</b> 点（轻松 5 / 严苛 3）</li>
+<li>精力 &gt; 75 → <b>+1</b>　精力 &lt; 35 → <b>−1</b>　压力 &gt; 78 → <b>−1</b></li>
+<li>班长得力（纪律 &gt; 70 且勤奋 &gt; 65）→ <b>+1</b></li>
+<li>最终限制在 <b>2–6</b> 点</li>
+</ul>
+
+<h3 id="appendix-h6">成长与上限</h3>
+<ul>
+<li>单科成长上限初始约 <b>5–18</b>（平均 11），难度会缩放：轻松 ×1.20 / 严苛 ×0.86</li>
+<li>认真操作 64 周后成长值通常 <b>9–11</b>，会接近或顶到上限</li>
+<li>抬上限的方式：<b>培优辅导</b>（弱科 +1.6~4.0）、<b>检查错题本</b>（全科 +0.6）、<b>外聘名师讲座</b></li>
+<li>顶到上限后继续刷题<b>完全无效</b>，先抬上限再投入</li>
+</ul>
+
+<h3 id="appendix-h7">高考评分</h3>
+<div class="tbl-wrap"><table>
+<thead><tr><th>评级</th><th>分数</th><th>称号</th></tr></thead>
+<tbody>
+<tr><td><span class="tag p">S</span></td><td>≥ 80</td><td>传奇班主任</td></tr>
+<tr><td><span class="tag a">A</span></td><td>≥ 64</td><td>名师</td></tr>
+<tr><td><span class="tag b">B</span></td><td>≥ 48</td><td>优秀班主任</td></tr>
+<tr><td><span class="tag y">C</span></td><td>≥ 32</td><td>合格班主任</td></tr>
+<tr><td><span class="tag r">D</span></td><td>&lt; 32</td><td>待改进班主任</td></tr>
+</tbody></table></div>
+<ul>
+<li><b>加权分</b>：按班级层级分配权重（见 <a href="#result" style="color:var(--acc)">16 章</a>）→ ×100</li>
+<li><b>进步分</b>：均分提升 ÷ 4（+16 ~ −10）</li>
+<li><b>满意度</b>：(满意度 − 60) ÷ 8（±6）　<b>红旗</b>：每面 +1.5　<b>投诉</b>：每次 −1.5</li>
+</ul>
+
+<h3 id="appendix-h8">减压手段的边际递减</h3>
+<p>团体心理辅导、文体活动、励志动员、减压心理课、班级团建游戏 —— 同一种手段在 <b>4 周内</b>重复使用会衰减：</p>
+<ul>
+<li>第 2 次 ×0.8　第 3 次 ×0.6　…… 最低 ×0.3　间隔满 4 周完全恢复</li>
+</ul>
+<div class="box warn"><span class="bt">记住</span>不要每周固定「减压班会 + 文体活动」，要<b>轮换手段</b>。</div>
+
+<div class="chnav"><a class="pv" href="#mis"><div class="cl">← 上一章</div><div class="ct">18 常见误区</div></a></div>
+<div class="rel"><span class="rl">相关：</span><a href="#score">05 成绩是怎么算的</a><a href="#result">16 高考与评分</a></div>
+</div>
+
+
+
+<div class="chnav"><a class="pv" href="#mis"><div class="cl">← 上一章</div><div class="ct">18 常见误区</div></a></div>
+<div class="rel"><span class="rl">相关：</span><a href="#score">05 成绩是怎么算的</a><a href="#result">16 高考与评分</a><a href="#manage">11 班级管理</a></div>
+
+<div class="foot">班主任模拟器 · 游玩手册 · 4 个部分 · 20 章（00–19）<br>
+数据与机制以当前版本游戏为准</div>
+</main>
+</div>
+
+<script>
+/* ===== 移动端：点击目录项后自动收起 ===== */
+document.getElementById('toc').addEventListener('click',function(e){
+  if(e.target.closest('a'))this.classList.remove('open');
+});
+
+/* ===== 阅读进度条 + 返回顶部 ===== */
+var _prog=document.getElementById('prog'),_tt=document.getElementById('totop');
+function updBar(){
+  var h=document.documentElement.scrollHeight-window.innerHeight;
+  var p=h>0?(window.scrollY/h):0;
+  if(_prog)_prog.style.width=(p*100).toFixed(2)+'%';
+  if(_tt)_tt.classList.toggle('on',window.scrollY>420);
+}
+
+/* ===== 目录高亮（含 Part 分组） ===== */
+(function(){
+  var links=[].slice.call(document.querySelectorAll('#toc a'));
+  var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'))}).filter(Boolean);
+  function upd(){
+    var y=window.scrollY+140,cur=null;
+    secs.forEach(function(s){if(s.offsetTop<=y)cur=s});
+    // 滚到顶时默认高亮第一项
+    if(!cur&&secs.length)cur=secs[0];
+    links.forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+(cur&&cur.id))});
+    // 已读：凡是已经滚过的章节都打勾（跳转也不会漏）
+    secs.forEach(function(s,i){if(s&&s.offsetTop<=y&&links[i])links[i].classList.add('read')});
+  }
+  window.addEventListener('scroll',function(){upd();updBar()},{passive:true});
+  window.addEventListener('resize',upd);
+  upd();updBar();
+})();
+
+/* ===== 搜索：过滤不匹配的章节，并高亮关键词 ===== */
+var _marks=[];
+function clearMarks(){
+  _marks.forEach(function(m){
+    var p=m.parentNode;
+    if(p){p.replaceChild(document.createTextNode(m.textContent),m);p.normalize()}
+  });
+  _marks=[];
+}
+function doSearch(v){
+  clearMarks();
+  v=(v||'').trim();
+  var cnt=document.getElementById('sCount');
+  var secs=[].slice.call(document.querySelectorAll('h2.sec'));
+  var cards=[].slice.call(document.querySelectorAll('#main > .card'));
+  var parts=[].slice.call(document.querySelectorAll('#main > .part'));
+  if(!v){
+    secs.forEach(function(s){s.style.display=''});
+    cards.forEach(function(c){c.style.display=''});
+    parts.forEach(function(p){p.style.display=''});
+    if(cnt){cnt.style.display='none';cnt.textContent=''}
+    var nr0=document.getElementById('nores');if(nr0)nr0.style.display='none';
+    return;
+  }
+  var kw=v.toLowerCase();
+  var hit=0;
+  function markIn(root,kw){
+    if(!root)return;
+    var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null);
+    var arr=[],n;
+    while(n=w.nextNode()){if(n.nodeValue.toLowerCase().indexOf(kw)>=0)arr.push(n)}
+    arr.forEach(function(node){
+      var idx=node.nodeValue.toLowerCase().indexOf(kw),frag=document.createDocumentFragment();
+      var str=node.nodeValue,first=true;
+      while(idx>=0){
+        frag.appendChild(document.createTextNode(str.slice(0,idx)));
+        var m=document.createElement('mark');m.textContent=str.substr(idx,kw.length);
+        if(first){m.className='cur';first=false}
+        frag.appendChild(m);_marks.push(m);
+        str=str.slice(idx+kw.length);idx=str.toLowerCase().indexOf(kw);
+      }
+      frag.appendChild(document.createTextNode(str));
+      node.parentNode.replaceChild(frag,node);
+    });
+  }
+  secs.forEach(function(s){
+    var el=s.nextElementSibling, ok=false;
+    if(el&&el.classList.contains('card')){
+      ok=el.textContent.toLowerCase().indexOf(kw)>=0||s.textContent.toLowerCase().indexOf(kw)>=0;
+      el.style.display=ok?'':'none';
+    }
+    s.style.display=ok?'':'none';
+    if(ok){hit++;markIn(el,kw)}
+  });
+  // 搜索时隐藏 Part 封面，结果更干净
+  parts.forEach(function(p){p.style.display='none'});
+  if(cnt){cnt.style.display='';cnt.textContent=hit?hit+' 章':'无结果'}
+  var t=document.getElementById('main');
+  if(hit===0){
+    if(!document.getElementById('nores')){
+      var d=document.createElement('div');d.id='nores';d.className='card';
+      d.innerHTML='<b>没有找到「'+v.replace(/</g,'&lt;')+'」</b>'+
+        '<div class="mini muted" style="margin-top:4px">试试：赋分、培优、经费、压力、凝聚力、课代表、985、分数线</div>';
+      t.insertBefore(d,t.firstChild);
+    }else{document.getElementById('nores').style.display=''}
+  }else{var nr=document.getElementById('nores');if(nr)nr.style.display='none'}
+}
+
+/* ===== 键盘：/ 聚焦搜索，Esc 清空 ===== */
+document.addEventListener('keydown',function(e){
+  if(e.key==='/'&&document.activeElement!==document.getElementById('q')){
+    e.preventDefault();document.getElementById('q').focus();
+  }
+  if(e.key==='Escape'){
+    var q=document.getElementById('q');
+    if(q&&q.value){q.value='';doSearch('');q.blur()}
+    document.getElementById('toc').classList.remove('open');
+  }
+});
+</script>
+</body>
+</html>

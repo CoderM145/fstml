@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>班主任模拟器 · 新高考</title>
+<title>F Simulator</title>
 <style>
 /* =========================================================
    班主任模拟器 · 视觉系统（深色 / 现代简约）
@@ -596,8 +596,8 @@ box-shadow:0 0 0 1px rgba(167,139,250,.06) inset}
 <div id="beta-gate" style="display:none">
   <div id="beta-box" class="beta-card">
     <div class="beta-logo">F</div>
-    <h1>班主任模拟器</h1>
-    <p class="beta-sub">内测版本 · 请输入测试账号</p>
+    <h1>Login Page</h1>
+    <p class="beta-sub">输入账密后继续</p>
     <div class="field">
       <label>测试账号</label>
       <input class="txin" id="bt-u" autocomplete="off" placeholder="账号" onkeydown="if(event.key==='Enter')document.getElementById('bt-p').focus()">
@@ -769,7 +769,7 @@ const PRESET23=[
 ["刘晨","m",96.5,103.5,101.5,40,86,79.5],
 ["吴文馨","f",108.5,87,140.5,40,43.5,87],
 ["钟君浩","m",105.5,108.5,98.5,45,78.5,69.5],
-["何蔚岑","f",93.5,88,139.5,45,62,77],
+["何蔚岑","m",93.5,88,139.5,45,62,77],
 ["林星森","m",91,96.5,111,44,74,87],
 ["陈佳俪","f",100,90,129,44,56,84],
 ["曾伟诚","m",97.5,99,122,50,67.5,66.5],
@@ -1043,7 +1043,7 @@ function newGame(pname,psub,clsId,script){
   }
   G_.logs=[];
   pushLog("system","你接手了 "+cd.name+"（"+cd.tierName+"），共 "+cd.size+" 名学生。");
-  if(script)pushLog("system","固定剧本：高二开学考成绩已导入，黄春生物理 98 分（单科第一）。");
+  if(script)pushLog("system","固定剧本：高二开学考成绩已导入。");
   return G_;
 }
 function estimateRank(g,lv){
@@ -1484,7 +1484,7 @@ function growStudents(){
     const potF=st.growthPot;
     const cohF=0.9+(coh-52)/260;           // 凝聚力
     const relF=0.92+(st.rel-50)/420;       // 与班主任的关系
-    // 错题本 + 计划表：执行度越高，学习效率加成越大（两者叠加还有协同）
+    // 错题本 + 计划本：执行度越高，学习效率加成越大（两者叠加还有协同）
     const styF=1+(cuotiQ()/100)*0.06+(planQ()/100)*0.05
       +((cuotiQ()>55&&planQ()>55)?0.025:0);
     const effF=clamp(1+(st.effBonus||0),0.6,1.8)*styF;
@@ -1859,7 +1859,7 @@ const ACTIONS=[
  {id:"discipline",n:"整顿纪律",cost:1,desc:"狠刹歪风，违纪下降但压力上升",run(){actDiscipline()}},
  {id:"phone",n:"手机专项治理",cost:2,desc:"突击检查、统一保管，根治手机问题",run(){actPhone()}},
  {id:"cuoti",n:"检查错题本",cost:1,desc:"抽查错题本：抬成长上限、提学习效率（执行度会随时间回落）",run(){actCuoti()}},
- {id:"plan",n:"检查计划表",cost:1,desc:"抽查学习计划表：提升勤奋与执行力，压住压力（执行度会回落）",run(){actPlan()}},
+ {id:"plan",n:"检查计划本",cost:1,desc:"抽查学习计划本：提升勤奋与执行力，压住压力（执行度会回落）",run(){actPlan()}},
  {id:"tuanfu",n:"团体心理辅导",cost:2,desc:"心理老师进班，全班大面积降压",run(){actTuanfu()}},
  {id:"peiyou",n:"培优辅导",cost:2,desc:"给年级前列的尖子生开小灶",run(){actPeiyou()}},
  {id:"bucha",n:"补差辅导",cost:2,desc:"拉一把后进生，提升班级下限",run(){actBucha()}},
@@ -1928,7 +1928,7 @@ function actPhone(){
   pushLog("act","开展手机专项治理，统一保管手机。");
   toast("手机专项治理：手机问题大幅下降，学生会记恨","y");render();
 }
-/* ---------- 学风双机制：错题本 / 计划表 ----------
+/* ---------- 学风双机制：错题本 / 计划本 ----------
    两者都是"检查"型行动：执行一次把执行度顶上去，之后每周自然回落。
    不检查就会失效，所以要么坚持、要么别开始。
 ------------------------------------------------- */
@@ -1962,8 +1962,8 @@ function actPlan(){
   });
   G.classDis=clamp(G.classDis+1.5,15,100);
   G.classMood=clamp(G.classMood+1.5,0,100);
-  pushLog("act","检查计划表（第 "+b+" 次），执行度 "+n0(before)+" → "+n0(q)+"。");
-  toast("检查计划表：执行度 "+n0(q)+"%，勤奋↑ 压力↓","g");render();
+  pushLog("act","检查计划本（第 "+b+" 次），执行度 "+n0(before)+" → "+n0(q)+"。");
+  toast("检查计划本：执行度 "+n0(q)+"%，勤奋↑ 压力↓","g");render();
 }
 function actTuanfu(){
   if(!spendAP(2))return;
@@ -2857,7 +2857,7 @@ function renderSetup(){
     <div class="hero">
       <div class="boot-logo">F</div>
       <h1>班主任模拟器</h1>
-      <p>固定剧本 · 23班（南山班 · 物化生）</p>
+      <p>内部测试版本，内测的用户请不要二次转发此页面链接与游玩截图，或者泄露登录账密</p>
       <div class="ver-badge">${GAME_VER}${BETA_MODE?' <span class="beta-t">内测</span>':''}</div>
     </div>
     <div class="card">
@@ -2882,9 +2882,8 @@ function renderSetup(){
           '<span style="flex:1">'+t[1]+'老师'+(t[2]?'（你）':'')+'</span>'+
           '<span class="tag '+(t[3]>=80?"g":t[3]<70?"y":"")+'">能力 '+t[3]+'</span></div>').join("")}
         <hr class="sep">
-        <div class="card-t"><h3>高二开学考</h3><span class="sub">${PRESET23.length} 人成绩已导入</span></div>
-        <div class="mini muted">按六科总分（语数英+物化生）排名，<b>黄春生</b>物理 98 分（单科第一），总分列第 12 名。
-        班级前 5：${PRESET23.slice(0,5).map(p=>p[0]).join("、")}。</div>
+        <div class="card-t"><h3>高二暑假考</h3><span class="sub">${PRESET23.length} 学生</span></div>
+        <div class="mini muted">提示：剧本模式内所有成绩与事件发生均为程序随机模拟，并不代表真实参考。请不要代入现实中。</div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
         <button class="btn pri" style="flex:1;min-width:160px" onclick="startGame()">开始任教</button>
@@ -2911,7 +2910,7 @@ function renderSetup(){
   <div class="hero">
     <div class="boot-logo">F</div>
     <h1>班主任模拟器</h1>
-    <p>新高考 3+1+2 · 从分科到高考，带完这一届</p>
+    <p>内部测试版本，内测的用户请不要二次转发此页面链接与游玩截图，或者泄露登录账密</p>
     <div class="ver-badge">${GAME_VER}${BETA_MODE?' <span class="beta-t">内测</span>':''}</div>
   </div>
   <div class="card">
@@ -3008,11 +3007,9 @@ function finishStart(){
   PAGE="dash";save();render();
   modal('<button class="x-close" data-close="1">×</button><h2>接手 '+G.cd.name+'</h2>'+
     '<p style="font-size:13.5px;color:#c4cddb">'+
-    '你是 '+G.player.name+' 老师，教 '+G.player.sub+'。面前的 '+G.cd.size+' 个孩子刚刚完成分科，'+
-    '其中组合为 <b>'+G.cd.combo+'</b> 的最多。距离高考还有 '+TOTAL_WEEKS+' 周。<br><br>'+
-    (G.scenario?('<b>高二开学考</b>成绩已导入：班级均分 <b>'+n1(G.exams[0].avg)+'</b> 分，'+
-      '第一名 '+G.exams[0].top[0].n+'（'+G.exams[0].top[0].t+' 分）。'+ 
-      '黄春生物理 98 分，总分冲到第 <b>12</b> 名。<br><br>'+
+    '你是 '+G.player.name+' 老师，教 '+G.player.sub+'。你将管理面前的 '+G.cd.size+' 个学生，直到高考，'+
+    '组合为 <b>'+G.cd.combo+'</b>。距离高考还有 '+TOTAL_WEEKS+' 周。<br><br>'+
+    (G.scenario?('<b>高二开学考</b>成绩已导入：班级均分 <b>'+n1(G.exams[0].avg)+'</b> 分，'+  
       '科任教师：'+PRESET_TEACHERS.map(t=>t[0]+'·'+t[1]).join(" ")+'<br><br>')
      :'摸底考班级均分 <b>'+n1(G.students.reduce((a,s)=>a+s.total,0)/G.students.length)+'</b> 分，'+
       '年级均分约 '+n0(gradeAvg())+' 分。<br><br>')+
@@ -3121,7 +3118,7 @@ function toggleFS(){
   document.addEventListener(ev,()=>{const b=document.querySelector('.fs-btn');if(b)b.innerHTML=isFS()?"退出全屏":"全屏"}));
 
 /* 游玩手册：独立网页文件，与游戏放在同一目录下 */
-const MANUAL_FILE="班主任模拟器_游玩手册.html";
+const MANUAL_FILE="play-navigator.html";
 function openManual(){
   const w=window.open(MANUAL_FILE,"_blank");
   if(!w){toast("浏览器拦截了新窗口，已打开内置速览","y");helpModal(true)}
@@ -3159,7 +3156,7 @@ function helpModal(fromBlocked){
    '严厉批评、没收手机、通报家长会拉低关系。学生面板可查看。<br>'+
    '<h4>学习效率与成长上限</h4>学生面板的<b>学习效率</b>综合了勤奋、心态、压力、体质、凝聚力与师生关系；'+
    '每科还有<b>成长上限</b>，培优、检查错题本、名师讲座可以抬高它——这是长期投资。<br>'+
-   '<h4>学风双机制</h4><b>检查错题本</b>（1 AP）抬成长上限并加学习效率，<b>检查计划表</b>（1 AP）加勤奋、降压力。'+
+   '<h4>学风双机制</h4><b>检查错题本</b>（1 AP）抬成长上限并加学习效率，<b>检查计划本</b>（1 AP）加勤奋、降压力。'+
    '两者都有<b>执行度</b>（0~100），每周分别回落 2.0 / 2.2 —— 不持续检查就会失效，'+
    '两样都维持在 55% 以上还有额外协同加成。<br>'+
    '<h4>赢下这一届</h4>高考后系统会根据班级层次考核（重点班看本科率、尖子班看一本率、特尖班看双一流率、南山班看 985 率）'+
@@ -3247,7 +3244,7 @@ function dash(){
     </div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:9px">
       ${G.flags.cuoti?'<span class="chip on">错题本 ×'+G.flags.cuoti+' · 执行 '+n0(cuotiQ())+'%</span>':''}
-      ${G.flags.plan?'<span class="chip on">计划表 ×'+G.flags.plan+' · 执行 '+n0(planQ())+'%</span>':''}
+      ${G.flags.plan?'<span class="chip on">计划本 ×'+G.flags.plan+' · 执行 '+n0(planQ())+'%</span>':''}
       <span class="chip">难度 ${["轻松","标准","严苛"][G.diff||1]}</span>
     </div>
   </div>
